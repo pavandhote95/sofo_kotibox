@@ -1,0 +1,72 @@
+part of 'app_pages.dart';
+// DO NOT EDIT. This is code generated via package:get_cli/get_cli.dart
+
+abstract class Routes {
+  Routes._();
+  static const HOME = _Paths.HOME;
+  static const SPLASH = _Paths.SPLASH;
+  static const ONBOARDING = _Paths.ONBOARDING;
+  static const GETSTARTED = _Paths.GETSTARTED;
+  static const LOGIN = _Paths.LOGIN;
+  static const DASHBOARD = _Paths.DASHBOARD;
+  static const ORDER = _Paths.ORDER;
+  static const ACCOUNT = _Paths.ACCOUNT;
+  static const CHECKOUT = _Paths.CHECKOUT;
+  static const PAYMENT = _Paths.PAYMENT;
+  static const DELIVERY_TIME = _Paths.DELIVERY_TIME;
+  static const SEARCHING = _Paths.SEARCHING;
+  static const WISHLIST = _Paths.WISHLIST;
+  static const NOTIFICATION = _Paths.NOTIFICATION;
+  static const PROFILE = _Paths.PROFILE;
+  static const VENDERLOGIN = _Paths.VENDERLOGIN;
+  static const VENDOR_DASHBOARD = _Paths.VENDOR_DASHBOARD;
+  static const VENDORALLORDERS = _Paths.VENDORALLORDERS;
+  static const VENDORPENDINGORDERS = _Paths.VENDORPENDINGORDERS;
+  static const VENDORADDITEM = _Paths.VENDORADDITEM;
+  static const VENDOR_PRODUCT_LIST = _Paths.VENDOR_PRODUCT_LIST;
+  static const VENDOR_SHOP = _Paths.VENDOR_SHOP;
+  static const VENDOR_CATEGORIES = _Paths.VENDOR_CATEGORIES;
+  static const EARNINGS = _Paths.EARNINGS;
+  static const VENDOR_EARNING = _Paths.VENDOR_EARNING;
+  static const VENDORWALLET = _Paths.VENDORWALLET;
+  static const YOUR_PAGE_NAME = _Paths.YOUR_PAGE_NAME;
+  static const VENDOR_CUSTOMERS = _Paths.VENDOR_CUSTOMERS;
+  static const VENDORREVIEW = _Paths.VENDORREVIEW;
+  static const VENDORRESUPPORT = _Paths.VENDORRESUPPORT;
+  static const VENDORRESETTINGS = _Paths.VENDORRESETTINGS;
+}
+
+abstract class _Paths {
+  _Paths._();
+  static const HOME = '/home';
+  static const SPLASH = '/splash';
+  static const ONBOARDING = '/onboarding';
+  static const GETSTARTED = '/getstarted';
+  static const LOGIN = '/login';
+  static const DASHBOARD = '/dashboard';
+  static const ORDER = '/order';
+  static const ACCOUNT = '/account';
+  static const CHECKOUT = '/checkout';
+  static const PAYMENT = '/payment';
+  static const DELIVERY_TIME = '/delivery-time';
+  static const SEARCHING = '/searching';
+  static const WISHLIST = '/wishlist';
+  static const NOTIFICATION = '/notification';
+  static const PROFILE = '/profile';
+  static const VENDERLOGIN = '/venderlogin';
+  static const VENDOR_DASHBOARD = '/vendor-dashboard';
+  static const VENDORALLORDERS = '/vendorallorders';
+  static const VENDORPENDINGORDERS = '/vendorpendingorders';
+  static const VENDORADDITEM = '/vendoradditem';
+  static const VENDOR_PRODUCT_LIST = '/vendor-product-list';
+  static const VENDOR_SHOP = '/vendor-shop';
+  static const VENDOR_CATEGORIES = '/vendor-categories';
+  static const EARNINGS = '/earnings';
+  static const VENDOR_EARNING = '/vendor-earning';
+  static const VENDORWALLET = '/vendorwallet';
+  static const YOUR_PAGE_NAME = '/your-page-name';
+  static const VENDOR_CUSTOMERS = '/vendor-customers';
+  static const VENDORREVIEW = '/vendorreview';
+  static const VENDORRESUPPORT = '/vendorresupport';
+  static const VENDORRESETTINGS = '/vendorresettings';
+}

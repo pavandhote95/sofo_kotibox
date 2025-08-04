@@ -1,0 +1,11 @@
+import 'package:get/get.dart';
+
+class CancelOrderController extends GetxController {
+  var selectedReasonIndex = 0.obs;
+
+  final List<String> reasons = ['Driver Late', 'Wrong Item', 'Damage Item'];
+
+  void selectReason(int index) {
+    selectedReasonIndex.value = index;
+  }
+}
