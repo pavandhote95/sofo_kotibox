@@ -32,6 +32,7 @@ class CartView extends GetView<CartController> {
         onRefresh: () async {
           await controller.fetchCartItems();
         },
+
         child: Stack(
           children: [
             Positioned(
@@ -112,7 +113,8 @@ class CartView extends GetView<CartController> {
                                 CustomButton(
                                   text: 'Check out',
                                   onPressed: () {
-                                    Get.to(() => const CheckoutView());
+                                    controller.checkout();
+
                                   },
                                 ),
                               ],
@@ -210,9 +212,9 @@ class CartView extends GetView<CartController> {
                     textConfirm: "Yes",
                     textCancel: "No",
                     middleTextStyle:   AppTextStyle.montserrat(
-                    fs: width * 0.04,
-                    fw: FontWeight.w500,
-                  ),
+                      fs: width * 0.04,
+                      fw: FontWeight.w500,
+                    ),
                     titleStyle: AppTextStyle.montserrat(
                       fs: width * 0.04,
                       fw: FontWeight.w200,

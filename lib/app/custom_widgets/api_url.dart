@@ -15,6 +15,8 @@ const String getStoreitemUrl = "$baseUrl/api/store/items/";
 const String getStoreAboutUrl = "$baseUrl/api/store/";
 const String postvendorLoginUrl = "$baseUrl/api/vendors/";
 const String Addtocart = "$baseUrl/api/add-to-cart";
+const String AddQty = "$baseUrl/api/cart-productQty-update";
+
 const String gettocartlist = "$baseUrl/api/cart";
 const String deletecartlist = "$baseUrl/api/cart/";
 

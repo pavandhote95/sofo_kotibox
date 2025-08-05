@@ -6,6 +6,7 @@ import 'package:sofo/app/custom_widgets/custom_button.dart';
 import 'package:sofo/app/custom_widgets/text_fonts.dart';
 import 'package:sofo/app/modules/payment/views/payment_view.dart';
 
+
 class ChooseDeliveryTimeView extends StatefulWidget {
   const ChooseDeliveryTimeView({super.key});
 
@@ -30,7 +31,7 @@ class _ChooseDeliveryTimeViewState extends State<ChooseDeliveryTimeView> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery
+    final size = MediaQuery 
         .of(context)
         .size;
     final height = size.height;
@@ -54,7 +55,9 @@ class _ChooseDeliveryTimeViewState extends State<ChooseDeliveryTimeView> {
             child: Container(
               height: height * 0.15,
               width: height * 0.23,
+
               decoration: BoxDecoration(
+
                 color: AppColor.orange,
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(height * 0.2),

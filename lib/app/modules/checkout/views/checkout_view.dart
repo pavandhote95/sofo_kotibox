@@ -7,16 +7,28 @@ import 'package:sofo/app/custom_widgets/custom_button.dart';
 import 'package:sofo/app/modules/checkout/views/delivery_time.dart';
 
 class CheckoutView extends StatefulWidget {
-  const CheckoutView({super.key});
+
+  final double totalPrice;
+  final List<int> productIds;
+
+  const CheckoutView({
+    super.key,
+    required this.totalPrice,
+    required this.productIds,
+  });
+
   @override
   State<CheckoutView> createState() => _CheckoutViewState();
 }
 
 class _CheckoutViewState extends State<CheckoutView> {
+
   String selectedAddress = 'Home';
   String selectedPayment = 'Credit Card';
   @override
   Widget build(BuildContext context) {
+    print(widget.productIds);
+
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     return Scaffold(

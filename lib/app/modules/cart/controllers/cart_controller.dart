@@ -2,13 +2,14 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import '../../../custom_widgets/api_url.dart';
 import '../../../services/api_service.dart';
+import '../../checkout/views/checkout_view.dart';
 
 class CartController extends GetxController {
   final api = RestApi();
 
   final cartItems = <Map<String, dynamic>>[].obs;
   final quantities = <int>[].obs;
-  final shippingFee = 60.0.obs;
+  final shippingFee = 0.0.obs;
   var isLoading = false.obs;
 
   @override
@@ -17,15 +18,51 @@ class CartController extends GetxController {
     fetchCartItems();
   }
 
-  Future<void> fetchCartItems() async {
-    isLoading.value = true;
 
+  void sendData({required int Id,required int productId, required int quantity}) async {
+    try {
+      final response = await api.postWithToken(
+        AddQty,
+        {
+          "cart_id": Id,
+          "product_id": productId,
+          "quantity": quantity,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        Get.snackbar("Success", "Product added to cart");
+        // Get.toNamed('/dashboard');
+      } else {
+        Get.snackbar("Error", "Failed to add to cart");
+      }
+    } catch (e) {
+      Get.snackbar("Error", "Something went wrong");
+    } finally {
+    }
+  }
+
+    Future<void> fetchCartItems() async {
+    isLoading.value = true;
     try {
       final response = await api.getWithAuthApi(gettocartlist);
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body) as List;
-        cartItems.assignAll(data.map((e) => e as Map<String, dynamic>).toList());
-        quantities.assignAll(data.map<int>((e) => e['quantity'] ?? 1).toList());
+        final responseData = jsonDecode(response.body);
+        print("Cart API Response: $responseData");
+        if (responseData['status'] == true) {
+          final items = List<Map<String, dynamic>>.from(responseData['items'] ?? []);
+          cartItems.assignAll(items);
+
+          quantities.assignAll(items.map<int>((e) => e['quantity'] ?? 1).toList());
+
+          final fee = responseData['shipping_fee'];
+
+          shippingFee.value = (fee is int || fee is double)
+              ? fee.toDouble()
+              : double.tryParse(fee.toString()) ?? 0.0;
+        } else {
+          Get.snackbar("Error", "Invalid cart response");
+        }
       } else {
         Get.snackbar("Error", "Failed to load cart: ${response.statusCode}");
       }
@@ -36,9 +73,9 @@ class CartController extends GetxController {
     }
   }
 
-  Future<void> deleteCartItem(int index, dynamic itemid) async {
+  Future<void> deleteCartItem(int index, dynamic itemId) async {
     try {
-      final response = await api.deleteApiWithAuth("${deletecartlist}$itemid", "");
+      final response = await api.deleteApiWithAuth("${deletecartlist}$itemId", "");
       if (response.statusCode == 200 || response.statusCode == 204) {
         cartItems.removeAt(index);
         quantities.removeAt(index);
@@ -52,7 +89,7 @@ class CartController extends GetxController {
   }
 
   double get totalItemPrice {
-    double total = 0;
+    double total = 0.0;
     for (int i = 0; i < cartItems.length; i++) {
       final price = double.tryParse(cartItems[i]['product_price'].toString()) ?? 0.0;
       total += price * quantities[i];
@@ -62,15 +99,40 @@ class CartController extends GetxController {
 
   double get totalPrice => totalItemPrice + shippingFee.value;
 
-  void increment(int index) => quantities[index]++;
+  void increment(int index) {
+    quantities[index]++;
+    print(quantities[index],);
+    sendData(
+      productId: cartItems[index]['product_id'],
+      Id:  cartItems[index]['id'],
+      quantity: quantities[index],
+    );
+  }
 
   void decrement(int index) {
     if (quantities[index] > 1) {
       quantities[index]--;
+      print(quantities[index],);
+
+      sendData(
+        productId: cartItems[index]['product_id'],
+        Id:  cartItems[index]['id'],
+
+        quantity: quantities[index],
+      );
     }
   }
 
   void checkout() {
-    print("Checking out with total ₹${totalPrice.toStringAsFixed(2)}");
+    final total = totalPrice;
+    final productIds = cartItems.map<int>((item) => item['product_id']).toList();
+
+    Get.to(
+          () => CheckoutView(
+        totalPrice: total,
+        productIds: productIds,
+      ),
+    );
   }
+
 }

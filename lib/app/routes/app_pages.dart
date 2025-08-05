@@ -103,11 +103,7 @@ class AppPages {
       page: () => AccountView(),
       binding: AccountBinding(),
     ),
-    GetPage(
-      name: _Paths.CHECKOUT,
-      page: () => CheckoutView(),
-      binding: CheckoutBinding(),
-    ),
+
     GetPage(
       name: _Paths.PAYMENT,
       page: () => PaymentView(),
