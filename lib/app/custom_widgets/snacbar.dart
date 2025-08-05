@@ -1,17 +1,12 @@
 // ignore_for_file: non_constant_identifier_names
 
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
 import 'package:get/get.dart';
 import 'package:sofo/app/custom_widgets/text_fonts.dart';
 
-
-
 class Utils {
-
   /// Show a green success snackbar with title and message.
   static void showSuccessSnackbar(String title, String message) {
     Get.snackbar(
@@ -67,13 +62,11 @@ class Utils {
   /// Validates if the given string is a proper email.
   static bool isValidEmail(String email) {
     final emailRegex =
-    RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+        RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
     return emailRegex.hasMatch(email);
   }
 
-
-
-
+  /// iOS-style confirm dialog using CupertinoAlertDialog
   static void showiOSConfirmDialog({
     required String title,
     required String message,
@@ -95,32 +88,35 @@ class Utils {
             message,
             style: AppTextStyle.montserrat(
               fs: 15,
-              c: CupertinoColors.black, fw: FontWeight.w500,
+              c: CupertinoColors.black,
+              fw: FontWeight.w500,
             ),
           ),
         ),
         actions: [
           CupertinoDialogAction(
             onPressed: () => Get.back(),
-            isDestructiveAction: false,
             child: Text(
               'Cancel',
               style: AppTextStyle.montserrat(
-
-             fs: 15, c: Colors.black, fw: FontWeight.w600,
+                fs: 15,
+                c: Colors.black,
+                fw: FontWeight.w600,
               ),
             ),
           ),
           CupertinoDialogAction(
             onPressed: () {
+              Get.back();
               onConfirm();
             },
             isDefaultAction: true,
             child: Text(
               'Confirm',
               style: AppTextStyle.montserrat(
-
-                fs: 15, c: Colors.red, fw: FontWeight.w600,
+                fs: 15,
+                c: Colors.red,
+                fw: FontWeight.w600,
               ),
             ),
           ),
@@ -130,7 +126,61 @@ class Utils {
     );
   }
 
-
-
-
+  /// Material-style confirm dialog (cross-platform)
+  static void showMaterialConfirmDialog({
+    required BuildContext context,
+    required String title,
+    required String message,
+    required VoidCallback onConfirm,
+  }) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (_) => AlertDialog(
+        title: Text(
+          title,
+          style: AppTextStyle.montserrat(
+            fs: 17,
+            fw: FontWeight.w600,
+            c: Colors.black,
+          ),
+        ),
+        content: Text(
+          message,
+          style: AppTextStyle.montserrat(
+            fs: 15,
+            fw: FontWeight.w500,
+            c: Colors.black,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(
+              'Cancel',
+              style: AppTextStyle.montserrat(
+                fs: 15,
+                fw: FontWeight.w600,
+                c: Colors.black,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              onConfirm();
+            },
+            child: Text(
+              'Confirm',
+              style: AppTextStyle.montserrat(
+                fs: 15,
+                fw: FontWeight.w600,
+                c: Colors.red,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

@@ -13,15 +13,12 @@ class StoreController extends GetxController {
   var isLoading = false.obs;
   var storeItem = StoreItem().obs;
   var storeAbout = StoreAboutData().obs;
-  var storeItems = <Map<String, dynamic>>[].obs; // Store data list directly
+  var storeItems = <Map<String, dynamic>>[].obs;
 
-
-   @override
+  @override
   void onInit() {
-    // TODO: implement onInit
     super.onInit();
   }
-
 
   Future<void> getStoreList(String storeId) async {
     try {
@@ -32,60 +29,42 @@ class StoreController extends GetxController {
 
       if (response.statusCode == 200 && responseJson["success"] == true) {
         storeItem.value = storeItemFromJson(response.body);
-
- 
       } else if (response.statusCode == 401) {
         AuthHelper.handleUnauthorized();
       } else {
-              print('   $responseJson["message"] okkkkkkkkkkkk ');
-        Utils.showErrorSnackbar(
-          "Error",
-          responseJson["message"] ?? "Something went wrong!",
-    
-        );
-  
+        print('${responseJson["message"]} okkkkkkkkkkkk');
+        Utils.showErrorToast(responseJson["message"] ?? "Something went wrong!");
       }
     } catch (e) {
       print('Store List Fetch Error: $e');
-      Utils.showErrorSnackbar("Exception", "Failed to load store list");
+      Utils.showErrorToast("Failed to load store list");
     } finally {
       isLoading(false);
     }
   }
 
+  Future<void> getStoreitemList(String storeId) async {
+    var storage = GetStorage();
+    try {
+      isLoading(true);
+      RestApi restApi = RestApi();
+      final response = await restApi.getWithAuthApi('${getStoreitemUrl}$storeId');
+      print('${getStoreitemUrl}$storeId storeId used in API');
+      final responseJson = json.decode(response.body);
 
-Future<void> getStoreitemList(String storeId) async {
-  var storage = GetStorage();
-
-  try {
-    isLoading(true);
-
-    RestApi restApi = RestApi();
-    final response = await restApi.getWithAuthApi('${getStoreitemUrl}$storeId');
-
-    print('${getStoreitemUrl}$storeId storeId used in API');
-
-    final responseJson = json.decode(response.body);
-
-    if (response.statusCode == 200) {
-      print('Store List Response: ${response.body}');
-
-
-      storeItems.value = List<Map<String, dynamic>>.from(responseJson["data"] ?? []);
-    } else if (response.statusCode == 401) {
-      AuthHelper.handleUnauthorized();
-    } else {
-      Utils.showErrorSnackbar(
-        "Error",
-        responseJson["message"] ?? "Something went wrong!",
-      );
+      if (response.statusCode == 200) {
+        print('Store List Response: ${response.body}');
+        storeItems.value = List<Map<String, dynamic>>.from(responseJson["data"] ?? []);
+      } else if (response.statusCode == 401) {
+        AuthHelper.handleUnauthorized();
+      } else {
+        Utils.showErrorToast(responseJson["message"] ?? "Something went wrong!");
+      }
+    } catch (e) {
+      print('Store List Fetch Error: $e');
+      Utils.showErrorToast("Failed to load store list");
+    } finally {
+      isLoading(false);
     }
-  } catch (e) {
-    print('Store List Fetch Error: $e');
-    Utils.showErrorSnackbar("Exception", "Failed to load store list");
-  } finally {
-    isLoading(false);
   }
-}
-
 }

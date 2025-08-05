@@ -31,7 +31,7 @@ class CartController extends GetxController {
       );
 
       if (response.statusCode == 200) {
-        Get.snackbar("Success", "Product added to cart");
+       print("quantity updated successfully");
         // Get.toNamed('/dashboard');
       } else {
         Get.snackbar("Error", "Failed to add to cart");

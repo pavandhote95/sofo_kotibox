@@ -1,6 +1,10 @@
   import 'package:cached_network_image/cached_network_image.dart';
   import 'package:flutter/material.dart';
   import 'package:get/get.dart';
+import 'package:sofo/app/modules/Dashboard/controllers/dashboard_controller.dart';
+import 'package:sofo/app/modules/Dashboard/views/dashboard_view.dart';
+import 'package:sofo/app/modules/cart/views/cart_view.dart';
+import 'package:sofo/app/routes/app_pages.dart';
   import '../../../../custom_widgets/app_color.dart';
   import '../../../../custom_widgets/custom_button.dart';
   import '../../../../custom_widgets/text_fonts.dart';
@@ -185,25 +189,32 @@
                                 ),
                                 SizedBox(height: 24),
                                 Obx(() => CustomButton(
+                                  
                                   text: 'Add to Cart',
                                   isLoading: controller.isLoading.value,
                                   onPressed: () {
-                                    final productId = item['id'] ?? 0;
-                                    final quantity = controller.quantity.value;
-                                    controller.sendData(productId: productId, quantity: quantity);
+                                             showPurchaseDialog(context, item);
+                                  
                                   },
                                   color: AppColor.yellow,
                                 )),
 
 
                                 SizedBox(height: 8),
-                                CustomButton(
-                                  text: 'Buy Now',
-                                  color: AppColor.orange,
-                                  onPressed: () {
-                                    showPurchaseDialog(context, item); // Pass item to dialog
-                                  },
-                                ),
+                            CustomButton(
+  text: 'Buy Now',
+  color: AppColor.orange,
+  onPressed: () {
+    // Navigate and remove all previous routes
+    Get.offAllNamed(Routes.DASHBOARD);
+
+    // Wait for the navigation to complete, then change tab
+    Future.delayed(Duration(milliseconds: 100), () {
+      Get.find<DashboardController>().changeIndex(2); // Navigate to Cart tab
+    });
+  },
+),
+
                               ],
                             ),
                           ),
@@ -409,7 +420,9 @@
                           borderRadius: 12,
                           onPressed: () {
                             // Handle confirmation
-                            Navigator.of(context).pop();
+                      final productId = item['id'] ?? 0;
+                                    final quantity = controller.quantity.value;
+                                    controller.sendData(productId: productId, quantity: quantity);
                           },
                         ),
                         const SizedBox(height: 12),

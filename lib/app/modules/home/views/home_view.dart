@@ -25,7 +25,7 @@ class HomeView extends GetView<HomeController> {
         return const Center(child: CustomLoadingIndicator());
       }
       return AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle(
+      value: SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
           statusBarIconBrightness: Brightness.dark,
         ),
@@ -205,22 +205,22 @@ class HomeView extends GetView<HomeController> {
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(30),
-                                        child: Image.network(
-                                          category.image ?? '',
-                                          width: 30,
-                                          height: 30,
-                                          fit: BoxFit.cover,
-                                          errorBuilder: (context, error,
-                                              stackTrace) =>
-                                              Icon(Icons.image_not_supported,
-                                                  size: 30, color: Colors.grey),
-                                        ),
-                                      ),
+                                      // ClipRRect(
+                                      //   borderRadius: BorderRadius.circular(30),
+                                      //   child: Image.network(
+                                      //     category.image ?? '',
+                                      //     width: 30,
+                                      //     height: 30,
+                                      //     fit: BoxFit.cover,
+                                      //     errorBuilder: (context, error,
+                                      //         stackTrace) =>
+                                      //         Icon(Icons.image_not_supported,
+                                      //             size: 30, color: Colors.grey),
+                                      //   ),
+                                      // ),
                                       Text(
                                         category.name ?? '',
-                                        style: AppTextStyle.montserrat(fs: 12),
+                                        style: AppTextStyle.montserrat(fs: 16),
                                       ),
                                     ],
                                   ),
@@ -257,7 +257,7 @@ class HomeView extends GetView<HomeController> {
                                       controller.storeList.value.data;
 
                                   // Check for null or empty data
-                                  if (storeData == null || storeData.isEmpty) {
+                                  if (storeData.isEmpty) {
                                     return Center(
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(
@@ -291,16 +291,16 @@ class HomeView extends GetView<HomeController> {
                                         },
                                         child: Padding(
                                           padding:
-                                          const EdgeInsets.only(bottom: 12),
+                                          const EdgeInsets.all(5),
                                           child: Material(
-                                            elevation: 0.8,
+                                            elevation: 4,
                                             borderRadius:
-                                            BorderRadius.circular(16),
+                                            BorderRadius.circular(5),
                                             child: Container(
                                               decoration: BoxDecoration(
                                                 color: AppColor.white,
                                                 borderRadius:
-                                                BorderRadius.circular(16),
+                                                BorderRadius.circular(8),
                                               ),
                                               child: Column(
                                                 crossAxisAlignment:
@@ -309,8 +309,8 @@ class HomeView extends GetView<HomeController> {
                                                   // Inside your widget:
                                                   ClipRRect(
                                                     borderRadius: const BorderRadius.only(
-                                                      topRight: Radius.circular(12),
-                                                      topLeft: Radius.circular(12),
+                                                      topRight: Radius.circular(5),
+                                                      topLeft: Radius.circular(5),
                                                     ),
                                                     child: CachedNetworkImage(
                                                       imageUrl: storeItem.shopImage.toString(),
@@ -320,7 +320,7 @@ class HomeView extends GetView<HomeController> {
                                                       placeholder: (context, url) => Container(
                                                         height: 180,
                                                         alignment: Alignment.center,
-                                                        child: CircularProgressIndicator(strokeWidth: 5),
+                                                        child: CircularProgressIndicator(strokeWidth: 5,color: AppColor.orange,),
                                                       ),
                                                       errorWidget: (context, url, error) => Container(
                                                         height: 180,

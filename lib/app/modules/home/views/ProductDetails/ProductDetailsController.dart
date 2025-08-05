@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:sofo/app/custom_widgets/snacbar.dart';
 
 import '../../../../custom_widgets/api_url.dart';
 import '../../../../services/api_service.dart';
@@ -38,17 +39,23 @@ class ProductDetailsController extends GetxController {
       );
 
       if (response.statusCode == 200) {
-        Get.snackbar("Success", "Product added to cart");
-          Get.toNamed('/dashboard'); 
+  Utils.showToast("Product added to cart");
+
+        print("heloo");
+        Get.toNamed('/dashboard');
       } else {
         Get.snackbar("Error", "Failed to add to cart");
       }
     } catch (e) {
+
+
+
+
+
+      
       Get.snackbar("Error", "Something went wrong");
     } finally {
       isLoading.value = false;
     }
   }
-
-
 }
