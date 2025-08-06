@@ -196,14 +196,14 @@ import 'package:sofo/app/routes/app_pages.dart';
                                              showPurchaseDialog(context, item);
                                   
                                   },
-                                  color: AppColor.yellow,
+                          
                                 )),
 
 
                                 SizedBox(height: 8),
                             CustomButton(
   text: 'Buy Now',
-  color: AppColor.orange,
+
   onPressed: () {
     // Navigate and remove all previous routes
     Get.offAllNamed(Routes.DASHBOARD);
@@ -416,7 +416,7 @@ import 'package:sofo/app/routes/app_pages.dart';
                         CustomButton(
                           height: 40,
                           text: 'Confirm',
-                          color: AppColor.orange,
+                     
                           borderRadius: 12,
                           onPressed: () {
                             // Handle confirmation

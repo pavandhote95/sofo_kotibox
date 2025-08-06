@@ -207,8 +207,8 @@ class AppPages {
     GetPage(
       name: _Paths.EDIT_ADDRESS,
       page: () => EditAddressView(
-        initialLabel: Get.arguments['initialLabel'],
-        onSave: Get.arguments['onSave'],
+        initialData: Get.arguments ?? {},
+     
       ),
       binding: EditAddressBinding(),
     ),

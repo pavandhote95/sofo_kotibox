@@ -129,12 +129,17 @@ class AllAddressListView extends StatelessWidget {
                                     IconButton(
                                       icon: const Icon(Icons.edit, color: Colors.grey),
                                       onPressed: () {
-                                        Get.to(() => EditAddressView(
-                                              initialLabel: address['type'] ?? '',
-                                              onSave: (updatedLabel) {
-                                                // Update logic (optional)
-                                              },
-                                            ));
+                                      Get.to(() => EditAddressView(initialData: {
+  'address_id': '2',
+  'type': 'Office',
+  'full_name': 'Shobha Kumari',
+  'road_name': '124',
+  'house_no': '25',
+  'city': 'Patna',
+  'state': 'Bihar',
+  'pincode': '8000020',
+  'phone': '99000007',
+}));
                                       },
                                     ),
                                     IconButton(
@@ -148,7 +153,7 @@ class AllAddressListView extends StatelessWidget {
                                           confirmTextColor: Colors.white,
                                           buttonColor: AppColor.orange,
                                           onConfirm: () {
-                                            // TODO: Call delete API
+                         
                                             Get.back();
                                           },
                                         );

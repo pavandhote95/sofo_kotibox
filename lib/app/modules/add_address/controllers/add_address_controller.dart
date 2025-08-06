@@ -1,12 +1,16 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:sofo/app/custom_widgets/snacbar.dart';
+import 'package:sofo/app/modules/all_address_list/controllers/all_address_list_controller.dart';
 
 import 'package:sofo/app/services/api_service.dart';
 
 class AddAddressController extends GetxController {
+ 
   final nameController = TextEditingController();
   final phoneController = TextEditingController();
   final pincodeController = TextEditingController();
@@ -22,10 +26,9 @@ class AddAddressController extends GetxController {
   void selectType(String type) {
     selectedType.value = type;
   }
-
-Future<void> saveAddress() async {
+ 
+Future<void> saveAddress(BuildContext context) async {
   const url = 'https://kotiboxglobaltech.com/sofo_app/api/auth/add-addresses';
-
   final token = restApi.storage.read("token");
 
   try {
@@ -50,24 +53,21 @@ Future<void> saveAddress() async {
     final streamedResponse = await request.send();
     final response = await http.Response.fromStream(streamedResponse);
 
-    // ✅ PRINT RESPONSE FOR DEBUGGING
     print('Response status: ${response.statusCode}');
     print('Response body: ${response.body}');
 
     final responseData = jsonDecode(response.body);
 
     if (response.statusCode == 200 && responseData['status'] == true) {
-      Get.snackbar("Success", "Address added successfully",
-          snackPosition: SnackPosition.BOTTOM);
-      Get.back();
+      Get.find<AllAddressListController>().fetchAddresses();
+      Utils.showToast("Address added successfully");
+      Navigator.pop(context);
     } else {
-      Get.snackbar("Error", responseData['message'] ?? "Something went wrong",
-          snackPosition: SnackPosition.BOTTOM);
+      Utils.showToast(responseData['message'] ?? "Something went wrong");
     }
   } catch (e) {
     print('Error occurred: $e');
-    Get.snackbar("Error", "Failed to add address: $e",
-        snackPosition: SnackPosition.BOTTOM);
+    Utils.showToast("Failed to add address: $e");
   }
 }
 

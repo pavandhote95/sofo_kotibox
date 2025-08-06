@@ -128,7 +128,7 @@ void showFilterBottomSheet(BuildContext context) {
               SafeArea(
                 child: CustomButton(
                   text: "Apply Filters",
-                  color: AppColor.orange,
+        
                   onPressed: () {
                     final sort =
                         controller.sortOptions[controller

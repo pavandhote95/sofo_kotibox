@@ -103,7 +103,7 @@ class AddAddressView extends StatelessWidget {
                         const SizedBox(height: 30),
                         CustomButton(
                           text: 'Save Address',
-                          onPressed: () => controller.saveAddress(),
+                          onPressed: () => controller.saveAddress(context),
                         ),
                         SizedBox(height: height * 0.02),
                       ],

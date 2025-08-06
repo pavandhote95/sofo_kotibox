@@ -143,7 +143,7 @@ class ProfileView extends GetView<ProfileController> {
                                   controller.isEditing.value = true;
                                 }
                               },
-                              color: AppColor.orange,
+                          
                             ),
                           ),
                         ],
