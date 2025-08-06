@@ -6,6 +6,7 @@ import '../controllers/dashboard_controller.dart';
 
 class DashboardView extends StatelessWidget {
   const DashboardView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return GetBuilder<DashboardController>(
@@ -13,41 +14,48 @@ class DashboardView extends StatelessWidget {
         return Scaffold(
           backgroundColor: AppColor.backgroundColor,
           body: controller.pages[controller.selectedIndex],
-          bottomNavigationBar: BottomNavigationBar(
-            currentIndex: controller.selectedIndex,
-            onTap: controller.changeIndex,
-            type: BottomNavigationBarType.fixed,
-            backgroundColor: AppColor.white,
-            selectedItemColor: AppColor.orange,
-            unselectedItemColor: AppColor.greyBarIcon,
-            selectedLabelStyle: AppTextStyle.manRope(
-              fs: 14,
-              fw: FontWeight.w600,
-              c: AppColor.orange,
+          bottomNavigationBar: Theme(
+            data: Theme.of(context).copyWith(
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              hoverColor: Colors.transparent,
             ),
-            unselectedLabelStyle: AppTextStyle.manRope(
-              fs: 14,
-              c: AppColor.greyBarIcon,
-              fw: FontWeight.w600,
+            child: BottomNavigationBar(
+              currentIndex: controller.selectedIndex,
+              onTap: controller.changeIndex,
+              type: BottomNavigationBarType.fixed,
+              backgroundColor: AppColor.white,
+              selectedItemColor: AppColor.orange,
+              unselectedItemColor: AppColor.greyBarIcon,
+              selectedLabelStyle: AppTextStyle.manRope(
+                fs: 14,
+                fw: FontWeight.w600,
+                c: AppColor.orange,
+              ),
+              unselectedLabelStyle: AppTextStyle.manRope(
+                fs: 14,
+                c: AppColor.greyBarIcon,
+                fw: FontWeight.w600,
+              ),
+              items: [
+                BottomNavigationBarItem(
+                  icon: _buildIcon('assets/icons/home_bar.png', controller.selectedIndex == 0),
+                  label: 'Home',
+                ),
+                BottomNavigationBarItem(
+                  icon: _buildIcon('assets/icons/order_bar.png', controller.selectedIndex == 1),
+                  label: 'Orders',
+                ),
+                BottomNavigationBarItem(
+                  icon: _buildIcon('assets/icons/cart.png', controller.selectedIndex == 2),
+                  label: 'Cart',
+                ),
+                BottomNavigationBarItem(
+                  icon: _buildIcon('assets/icons/account_bar.png', controller.selectedIndex == 3),
+                  label: 'Account',
+                ),
+              ],
             ),
-            items: [
-              BottomNavigationBarItem(
-                icon: _buildIcon('assets/icons/home_bar.png', controller.selectedIndex == 0),
-                label: 'Home',
-              ),
-              BottomNavigationBarItem(
-                icon: _buildIcon('assets/icons/order_bar.png', controller.selectedIndex == 1),
-                label: 'Orders',
-              ),
-              BottomNavigationBarItem(
-                icon: _buildIcon('assets/icons/cart.png', controller.selectedIndex == 2),
-                label: 'Cart',
-              ),
-              BottomNavigationBarItem(
-                icon: _buildIcon('assets/icons/account_bar.png', controller.selectedIndex == 3),
-                label: 'Account',
-              ),
-            ],
           ),
         );
       },

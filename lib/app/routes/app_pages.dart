@@ -1,13 +1,10 @@
 import 'package:get/get.dart';
-
 import '../modules/Dashboard/bindings/dashboard_binding.dart';
 import '../modules/Dashboard/views/dashboard_view.dart';
 import '../modules/Earnings/bindings/earnings_binding.dart';
 import '../modules/Earnings/views/earnings_view.dart';
 import '../modules/VendorCategories/bindings/vendor_categories_binding.dart';
 import '../modules/VendorCategories/views/vendor_categories_view.dart';
-import '../modules/VendorDashboard/bindings/vendor_dashboard_binding.dart';
-import '../modules/VendorDashboard/views/vendor_dashboard_view.dart';
 import '../modules/VendorProductList/bindings/vendor_product_list_binding.dart';
 import '../modules/VendorProductList/views/vendor_product_list_view.dart';
 import '../modules/VendorShop/bindings/vendor_shop_binding.dart';
@@ -26,8 +23,12 @@ import '../modules/Vendorreview/bindings/vendorreview_binding.dart';
 import '../modules/Vendorreview/views/vendorreview_view.dart';
 import '../modules/account/bindings/account_binding.dart';
 import '../modules/account/views/account_view.dart';
-import '../modules/checkout/bindings/checkout_binding.dart';
-import '../modules/checkout/views/checkout_view.dart';
+import '../modules/add_address/bindings/add_address_binding.dart';
+import '../modules/add_address/views/add_address_view.dart';
+import '../modules/all_address_list/bindings/all_address_list_binding.dart';
+import '../modules/all_address_list/views/all_address_list_view.dart';
+import '../modules/edit_address/bindings/edit_address_binding.dart';
+import '../modules/edit_address/views/edit_address_view.dart';
 import '../modules/getstarted/bindings/getstarted_binding.dart';
 import '../modules/getstarted/views/getstarted_view.dart';
 import '../modules/home/bindings/home_binding.dart';
@@ -52,7 +53,6 @@ import '../modules/venderlogin/bindings/venderlogin_binding.dart';
 import '../modules/venderlogin/views/venderRegister_view.dart';
 import '../modules/vendor_customers/bindings/vendor_customers_binding.dart';
 import '../modules/vendor_customers/views/vendor_customers_view.dart';
-
 import '../modules/vendorwallet/bindings/vendorwallet_binding.dart';
 import '../modules/vendorwallet/views/vendorwallet_view.dart';
 import '../modules/wishlist/bindings/wishlist_binding.dart';
@@ -201,8 +201,26 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.VENDORRESETTINGS,
-      page: () =>  SettingsView (),
+      page: () => SettingsView(),
       binding: VendorresettingsBinding(),
+    ),
+    GetPage(
+      name: _Paths.EDIT_ADDRESS,
+      page: () => EditAddressView(
+        initialLabel: Get.arguments['initialLabel'],
+        onSave: Get.arguments['onSave'],
+      ),
+      binding: EditAddressBinding(),
+    ),
+    GetPage(
+      name: _Paths.ALL_ADDRESS_LIST,
+      page: () => AllAddressListView(),
+      binding: AllAddressListBinding(),
+    ),
+    GetPage(
+      name: _Paths.ADD_ADDRESS,
+      page: () =>  AddAddressView(),
+      binding: AddAddressBinding(),
     ),
   ];
 }

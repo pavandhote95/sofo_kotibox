@@ -5,6 +5,7 @@ import 'package:sofo/app/custom_widgets/app_color.dart';
 import 'package:sofo/app/custom_widgets/text_fonts.dart';
 import 'package:sofo/app/custom_widgets/custom_button.dart';
 import 'package:sofo/app/modules/checkout/views/delivery_time.dart';
+import 'package:sofo/app/modules/edit_address/views/edit_address_view.dart';
 
 class CheckoutView extends StatefulWidget {
 
@@ -193,9 +194,17 @@ class _CheckoutViewState extends State<CheckoutView> {
           ),
           IconButton(
             icon: const Icon(Icons.edit, size: 18, color: Colors.grey),
-            onPressed: () {
-              // handle edit
-            },
+           onPressed: () {
+  Get.to(() => EditAddressView(
+    initialLabel: label,
+    onSave: (updatedLabel) {
+      setState(() {
+        selectedAddress = updatedLabel;
+      });
+    },
+  ));
+},
+
           ),
         ],
       ),

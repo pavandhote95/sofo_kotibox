@@ -205,22 +205,22 @@ class HomeView extends GetView<HomeController> {
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      // ClipRRect(
-                                      //   borderRadius: BorderRadius.circular(30),
-                                      //   child: Image.network(
-                                      //     category.image ?? '',
-                                      //     width: 30,
-                                      //     height: 30,
-                                      //     fit: BoxFit.cover,
-                                      //     errorBuilder: (context, error,
-                                      //         stackTrace) =>
-                                      //         Icon(Icons.image_not_supported,
-                                      //             size: 30, color: Colors.grey),
-                                      //   ),
-                                      // ),
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(30),
+                                        child: Image.network(
+                                          category.image ?? '',
+                                          width: 30,
+                                          height: 30,
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (context, error,
+                                              stackTrace) =>
+                                              Icon(Icons.image_not_supported,
+                                                  size: 30, color: Colors.grey),
+                                        ),
+                                      ),
                                       Text(
                                         category.name ?? '',
-                                        style: AppTextStyle.montserrat(fs: 16),
+                                        style: AppTextStyle.montserrat(fs: 10),
                                       ),
                                     ],
                                   ),

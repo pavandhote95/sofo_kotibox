@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sofo/app/custom_widgets/curved_top_container.dart';
 import 'package:sofo/app/modules/VendorDashboard/views/vendor_dashboard_view.dart';
+import 'package:sofo/app/modules/all_address_list/views/all_address_list_view.dart';
 import '../../../custom_widgets/app_color.dart';
 import '../../../custom_widgets/text_fonts.dart';
 import '../../notification/note_permission.dart';
@@ -52,8 +53,7 @@ class AccountView extends GetView<AccountController> {
                     ),
                     const SizedBox(height: 40),
 
-                    /// Profile Info
-                    /// Profile
+           
                     Obx(() => Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
@@ -127,6 +127,12 @@ class AccountView extends GetView<AccountController> {
                       onTap: () => Get.to(() => NotificationScreen()),
                     ),
                     const SizedBox(height: 15),
+                     _buildSettingItem(
+                      icon: CupertinoIcons.person,
+                      text: "Addresses",
+                      onTap: () => Get.to(() => AllAddressListView()),
+                    ),
+                             const SizedBox(height: 15),
 
                     /// Vendor Buttons
                     Obx(() {

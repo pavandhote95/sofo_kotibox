@@ -34,6 +34,9 @@ abstract class Routes {
   static const VENDORREVIEW = _Paths.VENDORREVIEW;
   static const VENDORRESUPPORT = _Paths.VENDORRESUPPORT;
   static const VENDORRESETTINGS = _Paths.VENDORRESETTINGS;
+  static const EDIT_ADDRESS = _Paths.EDIT_ADDRESS;
+  static const ALL_ADDRESS_LIST = _Paths.ALL_ADDRESS_LIST;
+  static const ADD_ADDRESS = _Paths.ADD_ADDRESS;
 }
 
 abstract class _Paths {
@@ -69,4 +72,7 @@ abstract class _Paths {
   static const VENDORREVIEW = '/vendorreview';
   static const VENDORRESUPPORT = '/vendorresupport';
   static const VENDORRESETTINGS = '/vendorresettings';
+  static const EDIT_ADDRESS = '/edit-address';
+  static const ALL_ADDRESS_LIST = '/all-address-list';
+  static const ADD_ADDRESS = '/add-address';
 }

@@ -78,8 +78,8 @@ class RestApi {
 
   //Get api with authentication
   Future<http.Response> getWithAuthApi(String path) async {
-    // print("my token is here >>>>");
-    // print(storage.read("token"));
+    print("my token is here >>>>");
+    print(storage.read("token"));
 
     var response = await http.get(
       Uri.parse(path),
