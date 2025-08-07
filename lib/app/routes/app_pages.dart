@@ -106,7 +106,19 @@ class AppPages {
 
     GetPage(
       name: _Paths.PAYMENT,
-      page: () => PaymentView(),
+      page: () {
+        // Expect arguments to be passed when navigating to PaymentView
+        final args = Get.arguments ?? {};
+        return PaymentView(
+          deliveryType: args['deliveryType'] ?? '',
+          selectedDate: args['selectedDate'] ?? '',
+          selectedTime: args['selectedTime'] ?? '',
+          selectedAddress: args['selectedAddress'] ?? '',
+          selectedPayment: args['selectedPayment'] ?? '',
+          totalPrice: args['totalPrice']?.toDouble() ?? 0.0,
+          productIds: args['productIds']?.cast<int>() ?? [],
+        );
+      },
       binding: PaymentBinding(),
     ),
     GetPage(

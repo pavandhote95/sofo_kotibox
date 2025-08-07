@@ -6,9 +6,18 @@ import 'package:sofo/app/custom_widgets/custom_button.dart';
 import 'package:sofo/app/custom_widgets/text_fonts.dart';
 import 'package:sofo/app/modules/payment/views/payment_view.dart';
 
-
 class ChooseDeliveryTimeView extends StatefulWidget {
-  const ChooseDeliveryTimeView({super.key});
+  final String seledtedaddress;
+  final String selectedpayment;
+  final double totalPrice;
+  final List<int> productIds;
+  const ChooseDeliveryTimeView({
+    super.key,
+    required this.seledtedaddress,
+    required this.selectedpayment,
+    required this.totalPrice,
+    required this.productIds,
+  });
 
   @override
   State<ChooseDeliveryTimeView> createState() => _ChooseDeliveryTimeViewState();
@@ -31,9 +40,12 @@ class _ChooseDeliveryTimeViewState extends State<ChooseDeliveryTimeView> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery 
-        .of(context)
-        .size;
+    print("Selected Address: ${widget.seledtedaddress}");
+    print("Selected Payment: ${widget.selectedpayment}");
+    print("Product IDs: ${widget.productIds}");
+    print("Total Price: ${widget.totalPrice}");
+
+    final size = MediaQuery.of(context).size;
     final height = size.height;
     final width = size.width;
 
@@ -48,16 +60,13 @@ class _ChooseDeliveryTimeViewState extends State<ChooseDeliveryTimeView> {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // Orange curved background - same as in CartView
           Positioned(
             top: -height * 0.06,
             right: -width * 0.15,
             child: Container(
               height: height * 0.15,
               width: height * 0.23,
-
               decoration: BoxDecoration(
-
                 color: AppColor.orange,
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(height * 0.2),
@@ -73,18 +82,15 @@ class _ChooseDeliveryTimeViewState extends State<ChooseDeliveryTimeView> {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Row(
                     children: [
-                     
-                 InkWell(
-  onTap: () {
-       Navigator.pop(context);
-  },
-  child: const Padding(
-    padding: EdgeInsets.all(8.0), // Optional for better tap area
-    child: Icon(Icons.arrow_back_ios, size: 20, color: Colors.black),
-  ),
-),
-
-
+                      InkWell(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Icon(Icons.arrow_back_ios, size: 20, color: Colors.black),
+                        ),
+                      ),
                       const SizedBox(width: 30),
                       Center(
                         child: Text(
@@ -112,7 +118,10 @@ class _ChooseDeliveryTimeViewState extends State<ChooseDeliveryTimeView> {
                         _deliveryOption(
                           title: 'Regular Delivery',
                           isSelected: deliveryType == 'Regular',
-                          onTap: () => setState(() => deliveryType = 'Regular'),
+                          onTap: () {
+                            setState(() => deliveryType = 'Regular');
+                            print("Delivery Type Selected: Regular");
+                          },
                           details: [
                             'As soon as possible (within 2 hours)',
                             'Estimated arrival time (10:00 AM - 3:00 PM)',
@@ -125,10 +134,11 @@ class _ChooseDeliveryTimeViewState extends State<ChooseDeliveryTimeView> {
                         _deliveryOption(
                           title: 'Scheduled Delivery',
                           isSelected: deliveryType == 'Scheduled',
-                          onTap: () =>
-                              setState(() => deliveryType = 'Scheduled'),
+                          onTap: () {
+                            setState(() => deliveryType = 'Scheduled');
+                            print("Delivery Type Selected: Scheduled");
+                          },
                         ),
-
                         const SizedBox(height: 20),
                         Text(
                           'Select Date',
@@ -164,26 +174,35 @@ class _ChooseDeliveryTimeViewState extends State<ChooseDeliveryTimeView> {
         ],
       ),
       bottomNavigationBar: SafeArea(
-
         child: Padding(
-          padding: const EdgeInsets.only(left: 16.0,right: 16.0,bottom: 10.0),
+          padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 10.0),
           child: CustomButton(
             text: "Confirm Delivery Time",
             onPressed: () {
+              String selectedDateStr = '';
+              String selectedTime = '';
+
               if (deliveryType == "Scheduled") {
-                final selectedDate = _generateDates(
-                    currentMonth)[selectedDateIndex];
-                final selectedTime = selectedTimeIndex != -1
+                final selectedDate = _generateDates(currentMonth)[selectedDateIndex];
+                selectedTime = selectedTimeIndex != -1
                     ? times[selectedTimeIndex]
                     : 'Not selected';
-                print(
-                  "Scheduled: ${selectedDate.day}-${selectedDate
-                      .month}-${selectedDate.year} at $selectedTime",
-                );
+                selectedDateStr =
+                "${selectedDate.day}-${selectedDate.month}-${selectedDate.year}";
+                print("Scheduled: $selectedDateStr at $selectedTime");
               } else {
                 print("Delivery Type: Regular");
               }
-              Get.to(() => PaymentView());
+
+              Get.to(() => PaymentView(
+                deliveryType: deliveryType,
+                selectedDate: selectedDateStr,
+                selectedTime: selectedTime,
+                selectedAddress: widget.seledtedaddress,
+                selectedPayment: widget.selectedpayment,
+                totalPrice: widget.totalPrice,
+                productIds: widget.productIds,
+              ));
             },
           ),
         ),
@@ -219,33 +238,32 @@ class _ChooseDeliveryTimeViewState extends State<ChooseDeliveryTimeView> {
           ),
           if (details != null)
             ...details.map(
-                  (detail) =>
-                  Padding(
-                    padding: const EdgeInsets.only(left: 36, top: 8),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(top: 6, right: 8),
-                          height: 6,
-                          width: 6,
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade400,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        Expanded(
-                          child: Text(
-                            detail,
-                            style: AppTextStyle.montserrat(
-                              fs: 13.5,
-                              c: Colors.grey.shade700,
-                            ),
-                          ),
-                        ),
-                      ],
+                  (detail) => Padding(
+                padding: const EdgeInsets.only(left: 36, top: 8),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(top: 6, right: 8),
+                      height: 6,
+                      width: 6,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade400,
+                        shape: BoxShape.circle,
+                      ),
                     ),
-                  ),
+                    Expanded(
+                      child: Text(
+                        detail,
+                        style: AppTextStyle.montserrat(
+                          fs: 13.5,
+                          c: Colors.grey.shade700,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
         ],
       ),
@@ -268,29 +286,22 @@ class _ChooseDeliveryTimeViewState extends State<ChooseDeliveryTimeView> {
             children: [
               GestureDetector(
                 onTap: () {
-                  if (!(currentMonth.month == DateTime
-                      .now()
-                      .month &&
-                      currentMonth.year == DateTime
-                          .now()
-                          .year)) {
+                  if (!(currentMonth.month == DateTime.now().month &&
+                      currentMonth.year == DateTime.now().year)) {
                     setState(() {
                       currentMonth = DateTime(
                         currentMonth.year,
                         currentMonth.month - 1,
                       );
                       selectedDateIndex = 0;
+                      print("Month Changed: ${_monthName(currentMonth.month)} ${currentMonth.year}");
                     });
                   }
                 },
                 child: Icon(
                   Icons.chevron_left,
-                  color: (currentMonth.month == DateTime
-                      .now()
-                      .month &&
-                      currentMonth.year == DateTime
-                          .now()
-                          .year)
+                  color: (currentMonth.month == DateTime.now().month &&
+                      currentMonth.year == DateTime.now().year)
                       ? Colors.grey.shade400
                       : Colors.black,
                 ),
@@ -307,6 +318,7 @@ class _ChooseDeliveryTimeViewState extends State<ChooseDeliveryTimeView> {
                       currentMonth.month + 1,
                     );
                     selectedDateIndex = 0;
+                    print("Month Changed: ${_monthName(currentMonth.month)} ${currentMonth.year}");
                   });
                 },
                 child: const Icon(Icons.chevron_right),
@@ -324,7 +336,11 @@ class _ChooseDeliveryTimeViewState extends State<ChooseDeliveryTimeView> {
               final date = datesList[index];
               final isSelected = selectedDateIndex == index;
               return GestureDetector(
-                onTap: () => setState(() => selectedDateIndex = index),
+                onTap: () {
+                  setState(() => selectedDateIndex = index);
+                  print(
+                      "Date Selected: ${date.day}-${date.month}-${date.year}");
+                },
                 child: Container(
                   width: 60,
                   margin: const EdgeInsets.symmetric(horizontal: 6),
@@ -338,8 +354,7 @@ class _ChooseDeliveryTimeViewState extends State<ChooseDeliveryTimeView> {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: isSelected ? AppColor.orange : Colors
-                              .transparent,
+                          color: isSelected ? AppColor.orange : Colors.transparent,
                           shape: BoxShape.circle,
                         ),
                         child: Text(
@@ -366,11 +381,7 @@ class _ChooseDeliveryTimeViewState extends State<ChooseDeliveryTimeView> {
     return List.generate(
       daysInMonth,
           (i) => DateTime(baseDate.year, baseDate.month, i + 1),
-    )
-        .where(
-          (d) => d.isAfter(DateTime.now().subtract(const Duration(days: 1))),
-    )
-        .toList();
+    ).where((d) => d.isAfter(DateTime.now().subtract(const Duration(days: 1)))).toList();
   }
 
   Widget _timeSelector() {
@@ -387,7 +398,10 @@ class _ChooseDeliveryTimeViewState extends State<ChooseDeliveryTimeView> {
       itemBuilder: (context, index) {
         final isSelected = selectedTimeIndex == index;
         return GestureDetector(
-          onTap: () => setState(() => selectedTimeIndex = index),
+          onTap: () {
+            setState(() => selectedTimeIndex = index);
+            print("Time Selected: ${times[index]}");
+          },
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
             decoration: BoxDecoration(

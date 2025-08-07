@@ -2,12 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sofo/app/custom_widgets/custom_button.dart';
 import 'package:sofo/app/modules/payment/views/payment_card_view.dart';
-import '../controllers/payment_controller.dart';
+import 'package:sofo/app/modules/payment/controllers/payment_controller.dart';
 import 'package:sofo/app/custom_widgets/app_color.dart';
 import 'package:sofo/app/custom_widgets/text_fonts.dart';
 
 class PaymentView extends GetView<PaymentController> {
-  PaymentView({super.key}) {
+  final String deliveryType;
+  final String selectedDate;
+  final String selectedTime;
+  final String selectedAddress;
+  final String selectedPayment;
+  final double totalPrice;
+  final List<int> productIds;
+
+  PaymentView({
+    super.key,
+    required this.deliveryType,
+    required this.selectedDate,
+    required this.selectedTime,
+    required this.selectedAddress,
+    required this.selectedPayment,
+    required this.totalPrice,
+    required this.productIds,
+  }) {
     Get.put(PaymentController());
   }
 
@@ -94,7 +111,7 @@ class PaymentView extends GetView<PaymentController> {
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   child: Row(
                     children: [
-                        IconButton(
+                      IconButton(
                         icon: const Icon(Icons.arrow_back_ios, size: 20),
                         onPressed: () => Get.back(),
                       ),
@@ -115,7 +132,54 @@ class PaymentView extends GetView<PaymentController> {
             ],
           ),
 
-          const SizedBox(height: 50),
+          // const SizedBox(height: 20),
+          //
+          // // Display delivery details (optional)
+          // Padding(
+          //   padding: const EdgeInsets.symmetric(horizontal: 16),
+          //   child: Column(
+          //     crossAxisAlignment: CrossAxisAlignment.start,
+          //     children: [
+          //       Text(
+          //         'Delivery Details',
+          //         style: AppTextStyle.montserrat(
+          //           fs: 16,
+          //           fw: FontWeight.w600,
+          //           c: Colors.black,
+          //         ),
+          //       ),
+          //       const SizedBox(height: 10),
+          //       Text(
+          //         'Delivery Type: $deliveryType',
+          //         style: AppTextStyle.montserrat(fs: 14),
+          //       ),
+          //       if (deliveryType == 'Scheduled') ...[
+          //         Text(
+          //           'Date: $selectedDate',
+          //           style: AppTextStyle.montserrat(fs: 14),
+          //         ),
+          //         Text(
+          //           'Time: $selectedTime',
+          //           style: AppTextStyle.montserrat(fs: 14),
+          //         ),
+          //       ],
+          //       Text(
+          //         'Address: $selectedAddress',
+          //         style: AppTextStyle.montserrat(fs: 14),
+          //       ),
+          //       Text(
+          //         'Total Price: \$${totalPrice.toStringAsFixed(2)}',
+          //         style: AppTextStyle.montserrat(fs: 14),
+          //       ),
+          //       Text(
+          //         'Product IDs: $productIds',
+          //         style: AppTextStyle.montserrat(fs: 14),
+          //       ),
+          //     ],
+          //   ),
+          // ),
+          //
+          // const SizedBox(height: 20),
 
           // Header row
           Padding(
@@ -158,22 +222,23 @@ class PaymentView extends GetView<PaymentController> {
             ),
           ),
 
+          const Spacer(),
 
           // Confirm Button
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
               child: CustomButton(
                 text: "Confirm",
                 onPressed: () {
-                  //navigate to next screen
-                  Get.to(AddCardView());
+                  // Pass data to AddCardView if needed
+                  Get.to(() => AddCardView(
+
+                  ));
                 },
               ),
-
             ),
           ),
-          SizedBox(height: 10,),
         ],
       ),
     );

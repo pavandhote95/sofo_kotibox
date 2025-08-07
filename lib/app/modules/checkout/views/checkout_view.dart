@@ -7,7 +7,6 @@ import 'package:sofo/app/modules/checkout/views/address_model.dart';
 import 'package:sofo/app/modules/checkout/views/delivery_time.dart';
 import 'package:sofo/app/modules/edit_address/views/edit_address_view.dart';
 import '../controllers/checkout_controller.dart';
-
 class CheckoutView extends StatefulWidget {
   final double totalPrice;
   final List<int> productIds;
@@ -24,8 +23,6 @@ class CheckoutView extends StatefulWidget {
 
 class _CheckoutViewState extends State<CheckoutView> {
   final checkoutController = Get.put(CheckoutController());
-
-  String selectedAddressType = 'Home';
   String selectedPayment = 'Credit Card';
 
   @override
@@ -90,15 +87,18 @@ class _CheckoutViewState extends State<CheckoutView> {
                     if (checkoutController.isLoading.value) {
                       return const Center(child: CircularProgressIndicator());
                     }
-                    return Column(
-                      children: [
-                        if (checkoutController.homeAddress.value != null)
-                          _addressTile(checkoutController.homeAddress.value!),
-                        if (checkoutController.officeAddress.value != null)
-                          _addressTile(checkoutController.officeAddress.value!),
-                      ],
+                    return SizedBox(
+                      height: 300, // Adjust height as needed
+                      child: ListView.builder(
+                        itemCount: checkoutController.allAddresses.length,
+                        itemBuilder: (context, index) {
+                          final address = checkoutController.allAddresses[index];
+                          return _addressTile(address);
+                        },
+                      ),
                     );
                   }),
+
                   const SizedBox(height: 20),
                   _sectionTitle('Payment method'),
                   _paymentTile('Credit Card'),
@@ -127,7 +127,15 @@ class _CheckoutViewState extends State<CheckoutView> {
         child: SafeArea(
           child: CustomButton(
             onPressed: () {
-              Get.to(() => const ChooseDeliveryTimeView());
+              print(checkoutController.selectedAddressId);
+              print(selectedPayment);
+              Get.to(() => ChooseDeliveryTimeView(
+                seledtedaddress:checkoutController.selectedAddressId.value,
+                  selectedpayment:selectedPayment,
+                  productIds: widget.productIds,
+                totalPrice: widget.totalPrice,
+
+              ));
             },
             text: 'Complete Order',
           ),
@@ -147,8 +155,6 @@ class _CheckoutViewState extends State<CheckoutView> {
   }
 
   Widget _addressTile(AddressModel address) {
-    final type = address.type;
-    final phone = address.phone;
     final fullAddress = "${address.houseNo}, ${address.roadName}, ${address.city}, ${address.state}";
 
     return Container(
@@ -160,35 +166,31 @@ class _CheckoutViewState extends State<CheckoutView> {
       ),
       child: Row(
         children: [
-          Radio<String>(
-            value: type,
-            groupValue: selectedAddressType,
+          Obx(() => Radio<String>(
+            value: address.id.toString(),
+            groupValue: checkoutController.selectedAddressId.value,
             activeColor: AppColor.orange,
-            onChanged: (value) async {
-              setState(() {
-                selectedAddressType = value!;
-              });
-
-              // Print selected address
-              print('--- Selected Address ---');
-              print('ID: ${address.id}');
-              print('Type: ${address.type}');
-              print('Phone: ${address.phone}');
-              print('City: ${address.city}');
-              print('State: ${address.state}');
-              print('Pincode: ${address.pincode}');
-
-              // Call API
-              await checkoutController.callShippingEditApi(address);
+            onChanged: (value) {
+              checkoutController.selectAddressById(value!);
+              print(address.id);
             },
-          ),
+          )),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(type, style: AppTextStyle.montserrat(fs: 14, fw: FontWeight.w600)),
-                Text(phone, style: AppTextStyle.montserrat(fs: 12, c: Colors.black.withOpacity(0.6))),
-                Text(fullAddress, style: AppTextStyle.montserrat(fs: 12, c: Colors.black.withOpacity(0.6))),
+                Text(
+                  address.type,
+                  style: AppTextStyle.montserrat(fs: 14, fw: FontWeight.w600),
+                ),
+                Text(
+                  address.phone,
+                  style: AppTextStyle.montserrat(fs: 12, c: Colors.black.withOpacity(0.6)),
+                ),
+                Text(
+                  fullAddress,
+                  style: AppTextStyle.montserrat(fs: 12, c: Colors.black.withOpacity(0.6)),
+                ),
               ],
             ),
           ),
