@@ -257,22 +257,6 @@ class HomeView extends GetView<HomeController> {
                                       controller.storeList.value.data;
 
                                   // Check for null or empty data
-                                  if (storeData.isEmpty) {
-                                    return Center(
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 32),
-                                        child: Text(
-                                          'No stores available',
-                                          style: AppTextStyle.montserrat(
-                                            fs: 16,
-                                            fw: FontWeight.w500,
-                                            c: AppColor.greyText,
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  }
 
                                   // Show list if data is available
                                   return ListView.builder(

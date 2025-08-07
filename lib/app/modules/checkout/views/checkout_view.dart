@@ -6,6 +6,7 @@ import 'package:sofo/app/custom_widgets/text_fonts.dart';
 import 'package:sofo/app/modules/checkout/views/address_model.dart';
 import 'package:sofo/app/modules/checkout/views/delivery_time.dart';
 import 'package:sofo/app/modules/edit_address/views/edit_address_view.dart';
+import '../../../custom_widgets/loder.dart';
 import '../controllers/checkout_controller.dart';
 class CheckoutView extends StatefulWidget {
   final double totalPrice;
@@ -85,7 +86,9 @@ class _CheckoutViewState extends State<CheckoutView> {
                   _sectionTitle('Shipping to'),
                   Obx(() {
                     if (checkoutController.isLoading.value) {
-                      return const Center(child: CircularProgressIndicator());
+                      return const Center(child: SizedBox(
+                        height: 300,
+                          child: CustomLoadingIndicator()));
                     }
                     return SizedBox(
                       height: 300, // Adjust height as needed
