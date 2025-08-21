@@ -20,7 +20,7 @@ class SplashView extends GetView<SplashController> {
 
           // Bottom loading indicator
           Positioned(
-            bottom: 50,
+            bottom: 80,
             left: 0,
             right: 0,
             child: Center(child: CustomLoadingIndicator()),

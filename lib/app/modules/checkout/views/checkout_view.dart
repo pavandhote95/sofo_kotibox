@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:sofo/app/custom_widgets/app_color.dart';
 import 'package:sofo/app/custom_widgets/custom_button.dart';
 import 'package:sofo/app/custom_widgets/text_fonts.dart';
+import 'package:sofo/app/modules/add_address/views/add_address_view.dart';
+import 'package:sofo/app/modules/all_address_list/views/all_address_list_view.dart';
 import 'package:sofo/app/modules/checkout/views/address_model.dart';
 import 'package:sofo/app/modules/checkout/views/delivery_time.dart';
 import 'package:sofo/app/modules/edit_address/views/edit_address_view.dart';
@@ -84,23 +86,68 @@ class _CheckoutViewState extends State<CheckoutView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _sectionTitle('Shipping to'),
-                  Obx(() {
-                    if (checkoutController.isLoading.value) {
-                      return const Center(child: SizedBox(
-                        height: 300,
-                          child: CustomLoadingIndicator()));
-                    }
-                    return SizedBox(
-                      height: 300, // Adjust height as needed
-                      child: ListView.builder(
-                        itemCount: checkoutController.allAddresses.length,
-                        itemBuilder: (context, index) {
-                          final address = checkoutController.allAddresses[index];
-                          return _addressTile(address);
-                        },
-                      ),
-                    );
-                  }),
+       Obx(() {
+  if (checkoutController.isLoading.value) {
+    return const Center(
+      child: SizedBox(
+        height: 300,
+        child: CustomLoadingIndicator(),
+      ),
+    );
+  }
+
+  if (checkoutController.allAddresses.isEmpty) {
+    // Agar address hi nahi hai
+    return SizedBox(
+      height: 200,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.location_off, size: 50, color: Colors.grey),
+            const SizedBox(height: 10),
+            Text(
+              "No address found",
+              style: AppTextStyle.montserrat(
+                fs: 14,
+                c: Colors.black.withOpacity(0.6),
+              ),
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              
+              onPressed: () {
+                Get.to(() => AllAddressListView(
+            // नया address add करने के लिए empty भेजो
+                    ));
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColor.orange,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: Text("Add Address"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Agar address available hai to list dikhao
+  return SizedBox(
+    height: 300,
+    child: ListView.builder(
+      itemCount: checkoutController.allAddresses.length,
+      itemBuilder: (context, index) {
+        final address = checkoutController.allAddresses[index];
+        return _addressTile(address);
+      },
+    ),
+  );
+}),
 
                   const SizedBox(height: 20),
                   _sectionTitle('Payment method'),

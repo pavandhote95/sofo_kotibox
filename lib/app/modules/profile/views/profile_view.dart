@@ -6,7 +6,6 @@ import '../../../custom_widgets/text_fonts.dart';
 import '../../../custom_widgets/text_formfield.dart';
 import '../controllers/profile_controller.dart';
 
-// ignore: must_be_immutable
 class ProfileView extends GetView<ProfileController> {
   ProfileController controller = Get.put(ProfileController());
 
@@ -22,7 +21,6 @@ class ProfileView extends GetView<ProfileController> {
           Positioned(
             top: -height * 0.06,
             right: -width * 0.15,
-            
             child: Container(
               height: height * 0.18,
               width: height * 0.23,
@@ -39,7 +37,6 @@ class ProfileView extends GetView<ProfileController> {
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: Stack(
                 children: [
-                  // Back button at the top left corner
                   Align(
                     alignment: Alignment.topLeft,
                     child: IconButton(
@@ -54,31 +51,47 @@ class ProfileView extends GetView<ProfileController> {
                     child: SingleChildScrollView(
                       child: Column(
                         children: [
-                          // Profile photo
-                          Container(
-                            padding: EdgeInsets.all(4), // Border width
-                            decoration: BoxDecoration(
-                              color: AppColor.orange, // Border color
-                              shape: BoxShape.circle,
-                            ),
-                            child: CircleAvatar(
-                              radius: 60,
-                              backgroundImage: NetworkImage(
-                                'https://photosking.net/wp-content/uploads/2024/06/korean-girl-photo_48.webp',
-                              ),
-                              backgroundColor: AppColor.grey,
-                            ),
-                          ),
+                          // Profile Image
+                        // Profile Image
+Obx(() => GestureDetector(
+  onTap: () => controller.pickImage(),
+  child: Container(
+        padding: EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: AppColor.orange,
+          shape: BoxShape.circle,
+        ),
+        child: CircleAvatar(
+          radius: 50,
+          backgroundColor: Colors.grey[200],
+          backgroundImage: controller.selectedImage.value != null
+              ? FileImage(controller.selectedImage.value!)
+              : (controller.profileModel.value.profileImageUrl != null &&
+                      controller.profileModel.value.profileImageUrl!.isNotEmpty)
+                  ? NetworkImage(controller.profileModel.value.profileImageUrl!)
+                  : null, // <-- null so child will show
+          child: (controller.selectedImage.value == null &&
+                  (controller.profileModel.value.profileImageUrl == null ||
+                      controller.profileModel.value.profileImageUrl!.isEmpty))
+              ? Icon(
+                  Icons.add_a_photo, // Placeholder Icon
+                  size: 40,
+                  color: AppColor.orange,
+                )
+              : null,
+        ),
+      ),
+)),
 
                           const SizedBox(height: 10),
+
                           OutlinedButton(
-                            onPressed: () {
-                              // Handle edit photo
-                            },
+                            onPressed: () => controller.pickImage(),
                             style: OutlinedButton.styleFrom(
-                              side: BorderSide(color: AppColor.orange, width: 1.5),
+                              side:
+                                  BorderSide(color: AppColor.orange, width: 1.5),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(19), // Optional: for rounded corners
+                                borderRadius: BorderRadius.circular(19),
                               ),
                             ),
                             child: Text(
@@ -90,62 +103,43 @@ class ProfileView extends GetView<ProfileController> {
                               ),
                             ),
                           ),
+                          const SizedBox(height: 20),
 
-                          const SizedBox(height: 20),
-                          Obx(
-                            () => CustomTextField(
-                              hint: "Enter full name",
-                              controller: controller.nameController,
-                              focusNode: controller.nameFocus,
-                              readOnly: !controller.isEditing.value,
-                            ),
+                          // Name
+                          CustomTextField(
+                            hint: "Enter full name",
+                            controller: controller.nameController,
+                            focusNode: controller.nameFocus,
+                            readOnly: false, // Always editable
                           ),
                           const SizedBox(height: 20),
-                          Obx(
-                            () => CustomTextField(
-                              hint: "Enter email",
-                              controller: controller.emailController,
-                              focusNode: controller.emailFocus,
-                              readOnly: !controller.isEditing.value,
-                            ),
+
+                          // Email
+                          CustomTextField(
+                            hint: "Enter email",
+                            controller: controller.emailController,
+                            focusNode: controller.emailFocus,
+                            readOnly: false,
                           ),
                           const SizedBox(height: 20),
-                          Obx(
-                            () => CustomTextField(
-                              hint: "Enter phone number",
-                              controller: controller.phoneController,
-                              focusNode: controller.phoneFocus,
-                              readOnly: !controller.isEditing.value,
-                            ),
+
+                          // Phone
+                          CustomTextField(
+                            hint: "Enter phone number",
+                            controller: controller.phoneController,
+                            focusNode: controller.phoneFocus,
+                            readOnly: false,
                           ),
-                          // const SizedBox(height: 20),
-                          // Obx(
-                          //   () => CustomTextField(
-                          //     hint: "Enter password",
-                          //     controller: controller.passwordController,
-                          //     focusNode: controller.passwordFocus,
-                          //     isPassword: true,
-                          //     readOnly: !controller.isEditing.value,
-                          //   ),
-                          // ),
                           const SizedBox(height: 30),
-                          Obx(
-                            () => CustomButton(
-                              text:
-                                  controller.isEditing.value
-                                      ? "Save Profile"
-                                      : "Edit Profile",
-                              onPressed: () {
-                                if (controller.isEditing.value) {
-                                  // Handle profile update
-                                  controller.isEditing.value = false;
-                                } else {
-                                  controller.isEditing.value = true;
-                                }
-                              },
-                          
-                            ),
-                          ),
+
+                          // Save Button
+                          Obx(() => CustomButton(
+                                text: "Save Profile",
+                                isLoading: controller.isLoading.value,
+                                onPressed: () {
+                                  controller.updateProfile();
+                                },
+                              )),
                         ],
                       ),
                     ),

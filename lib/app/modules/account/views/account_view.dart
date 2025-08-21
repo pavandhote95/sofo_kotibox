@@ -32,8 +32,7 @@ class AccountView extends GetView<AccountController> {
               padding:
                   const EdgeInsets.only(left: 20, right: 20, top: 50, bottom: 20),
               child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(), // Important for short content
-
+                physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -53,67 +52,84 @@ class AccountView extends GetView<AccountController> {
                     ),
                     const SizedBox(height: 40),
 
-           
-                    Obx(() => Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: 80,
-                              height: 80,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border:
-                                    Border.all(color: AppColor.orange, width: 3),
-                              ),
-                              padding: const EdgeInsets.all(3),
-                              child: CircleAvatar(
-                                radius: 40,
-                                backgroundImage: NetworkImage(
-                                  controller.profileImageUrl.value.isNotEmpty
-                                      ? controller.profileImageUrl.value
-                                      : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSra33TXWFQcgtUWNap2aDvm97GZflRLYtxiA&s',
-                                ),
-                                backgroundColor: Colors.grey[200],
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    controller.name.value.isNotEmpty
-                                        ? controller.name.value
-                                        : 'Loading...',
-                                    style: AppTextStyle.montserrat(
-                                      fs: 20,
-                                      fw: FontWeight.w600,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 5),
-                                  Text(
-                                    controller.email.value.isNotEmpty
-                                        ? '@${controller.email.value.split('@').first}'
-                                        : '',
-                                    style: AppTextStyle.montserrat(
-                                      fs: 15,
-                                      c: AppColor.greyHint,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        )),
+                    /// Profile Info
+         /// Profile Info
+Obx(() => GestureDetector(
+  onTap: () async {
+    await Get.to(() => ProfileView());
+    // 🔹 ProfileView se wapas aane ke baad refresh karega
+    controller.fetchUserProfile();
+  },
+  child: Row(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Container(
+        width: 80,
+        height: 80,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: AppColor.orange, width: 3),
+        ),
+        padding: const EdgeInsets.all(3),
+        child: CircleAvatar(
+          radius: 40,
+          backgroundColor: Colors.grey[200],
+          backgroundImage: controller.profileImageUrl.value.isNotEmpty
+              ? NetworkImage(controller.profileImageUrl.value)
+              : null, // image तभी load होगी जब url होगा
+          child: controller.profileImageUrl.value.isEmpty
+              ? Icon(
+                  Icons.add_a_photo, // Add image का icon
+                  size: 30,
+                  color: AppColor.orange,
+                )
+              : null,
+        ),
+      ),
+      const SizedBox(width: 16),
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              controller.name.value.isNotEmpty
+                  ? controller.name.value
+                  : 'Loading...',
+              style: AppTextStyle.montserrat(
+                fs: 20,
+                fw: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 5),
+            Text(
+              controller.email.value.isNotEmpty
+                  ? controller.email.value
+                  : '',
+              style: AppTextStyle.montserrat(
+                fs: 15,
+                c: AppColor.greyHint,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ],
+  ),
+)),
 
-                    const SizedBox(height: 30),
+const SizedBox(height: 30),
 
-                    /// Menu Items
-                    _buildSettingItem(
-                      icon: CupertinoIcons.person,
-                      text: "Edit Profile",
-                      onTap: () => Get.to(() => ProfileView()),
-                    ),
+/// Menu Items
+_buildSettingItem(
+  icon: CupertinoIcons.person,
+  text: "Edit Profile",
+  onTap: () async {
+    await Get.to(() => ProfileView());
+    // 🔹 ProfileView se wapas aane ke baad refresh karega
+    controller.fetchUserProfile();
+  },
+),
+
                     const SizedBox(height: 15),
                     _buildSettingItem(
                       icon: CupertinoIcons.gear,
@@ -127,19 +143,17 @@ class AccountView extends GetView<AccountController> {
                       onTap: () => Get.to(() => NotificationScreen()),
                     ),
                     const SizedBox(height: 15),
-                     _buildSettingItem(
-                      icon: CupertinoIcons.person,
+                    _buildSettingItem(
+                      icon: CupertinoIcons.location,
                       text: "Addresses",
                       onTap: () => Get.to(() => AllAddressListView()),
                     ),
-                             const SizedBox(height: 15),
+                    const SizedBox(height: 15),
 
                     /// Vendor Buttons
                     Obx(() {
                       final vendorValue = controller.becomeVendor.value;
-
                       if (vendorValue == '0' || vendorValue == "1") {
-                        // Show Become a Vendor
                         return Column(
                           children: [
                             _buildSettingItem(
@@ -151,60 +165,57 @@ class AccountView extends GetView<AccountController> {
                           ],
                         );
                       } else if (vendorValue == '2') {
-                        // Show Vendor Dashboard
                         return Column(
                           children: [
                             _buildSettingItem(
                               icon: CupertinoIcons.rectangle_stack_person_crop,
                               text: "Vendor Dashboard",
-                              onTap: () => Get.to(() => VendorDashboardView(controller.userid)),
+                              onTap: () => Get.to(() =>
+                                  VendorDashboardView(controller.userid)),
                             ),
                             const SizedBox(height: 15),
                           ],
                         );
                       } else {
-                        // Optional fallback (if unexpected value)
                         return const SizedBox.shrink();
                       }
                     }),
                     const SizedBox(height: 50),
 
                     /// Logout
-                   SizedBox(
-                        width: double.infinity,
-                        height: 48,
-                        child: OutlinedButton(
-                          onPressed: controller.isLoading.value
-                              ? null
-                              : () => controller.postLogOut(), // ✅ Corrected here
-                          style: OutlinedButton.styleFrom(
-                            side: BorderSide(color: AppColor.orange),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                          ),
-                          child: controller.isLoading.value
-                              ? SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2.5,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                  AppColor.orange),
-                            ),
-                          )
-                              : Text(
-                            "Log Out",
-                            style: AppTextStyle.montserrat(
-                              fs: 16,
-                              fw: FontWeight.w600,
-                              c: AppColor.orange,
-                            ),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 48,
+                      child: OutlinedButton(
+                        onPressed: controller.isLoading.value
+                            ? null
+                            : () => controller.postLogOut(),
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: AppColor.orange),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
                           ),
                         ),
+                        child: controller.isLoading.value
+                            ? SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.5,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      AppColor.orange),
+                                ),
+                              )
+                            : Text(
+                                "Log Out",
+                                style: AppTextStyle.montserrat(
+                                  fs: 16,
+                                  fw: FontWeight.w600,
+                                  c: AppColor.orange,
+                                ),
+                              ),
                       ),
-
-
+                    ),
                     const SizedBox(height: 30),
                   ],
                 ),

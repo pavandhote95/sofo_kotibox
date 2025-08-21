@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 import 'package:sofo/app/custom_widgets/api_url.dart';
 import 'package:sofo/app/services/api_service.dart';
 
-
 class AllAddressListController extends GetxController {
   final RestApi api = RestApi();
 
@@ -28,8 +27,16 @@ class AllAddressListController extends GetxController {
           final List<dynamic> data = jsonData['data'];
           addressList.value = List<Map<String, dynamic>>.from(data);
         } else {
-          Get.snackbar("Error", jsonData['message']);
+          // ❌ Agar "No address found" aaye to snackbar na dikhaye
+          if ((jsonData['message'] ?? '').toString().toLowerCase() == "no address found") {
+            addressList.clear(); // ensure empty list
+          } else {
+            Get.snackbar("Error", jsonData['message']);
+          }
         }
+      } else if (response.statusCode == 422) {
+        // ❌ yahan bhi snackbar skip karna hai
+        addressList.clear();
       } else {
         Get.snackbar("Server Error", "Status Code: ${response.statusCode}");
       }

@@ -1,126 +1,141 @@
 import 'dart:convert';
 import 'dart:io';
-
+import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
-import 'dart:async';
-import 'package:dio/dio.dart' as RESPONSE;
-import 'package:dio/dio.dart';
+
+import '../custom_widgets/snacbar.dart';
+import '../routes/app_pages.dart';
 
 class RestApi {
-  var storage = GetStorage();
+  final storage = GetStorage();
 
-  //Post api without authentication
+  Future<String?> getToken() async {
+    return storage.read("token");
+  }
+
+  /// 🔑 Common headers with/without Auth
+  Future<Map<String, String>> _getHeaders({bool withAuth = false}) async {
+    final token = await getToken();
+    Map<String, String> headers = {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+    };
+    if (withAuth && token != null) {
+      headers["Authorization"] = "Bearer $token";
+    }
+    return headers;
+  }
+
+  /// 🔥 Handle unauthorized globally
+  void _handleUnauthorized() {
+    storage.erase();
+    Utils.showErrorSnackbar("Session Expired", "Please login again.");
+    Get.offAllNamed(Routes.LOGIN);
+  }
+
+  /// Generic response handler
+  http.Response _handleResponse(http.Response response) {
+    print("🔹 API Response [${response.statusCode}]: ${response.body}");
+    if (response.statusCode == 401) {
+      _handleUnauthorized();
+    }
+    return response;
+  }
+
+  /// POST API without authentication
   Future<http.Response> postApi(String url, String request) async {
-    var response = await http.post(
+    final response = await http.post(
       Uri.parse(url),
       body: request,
-      headers: {
-        "content-type": "application/json",
-        "accept": "application/json",
-      },
+      headers: await _getHeaders(),
       encoding: Encoding.getByName("utf-8"),
     );
-    return response;
+    return _handleResponse(response);
   }
 
-  //OTP api with url
+  /// GET API for OTP (no headers)
   Future<http.Response> getApiOTP(String path) async {
     var response = await http.get(Uri.parse(path));
-    print(response.body);
-    return response;
+    return _handleResponse(response);
   }
 
-  //Post api with authentication
+  /// POST API with authentication
   Future<http.Response> postApiWithAuth(String path, String request) async {
-    var response = await http.post(
+    final response = await http.post(
       Uri.parse(path),
       body: request,
-      headers: {
-        "content-type": "application/json",
-        "accept": "application/json",
-        "Authorization": 'Bearer ${storage.read("token")}',
-      },
+      headers: await _getHeaders(withAuth: true),
     );
-
-    return response;
+    return _handleResponse(response);
   }
 
-  //Delete api with authentication
+  /// DELETE API with authentication
   Future<http.Response> deleteApiWithAuth(String path, String request) async {
-    var response = await http.delete(
+    final response = await http.delete(
       Uri.parse(path),
       body: request,
-      headers: {
-        "content-type": "application/json",
-        "accept": "application/json",
-        "Authorization": 'Bearer ${storage.read("token")}',
-      },
+      headers: await _getHeaders(withAuth: true),
     );
-
-    return response;
+    return _handleResponse(response);
   }
 
-  //Put api with authentication
+  /// PUT API with authentication
   Future<http.Response> putApiWithAuth(String path, String request) async {
-    var response = await http.put(
+    final response = await http.put(
       Uri.parse(path),
       body: request,
-      headers: {
-        "content-type": "application/json",
-        "accept": "application/json",
-        "Authorization": 'Bearer ${storage.read("token")}',
-      },
+      headers: await _getHeaders(withAuth: true),
     );
-
-    return response;
+    return _handleResponse(response);
   }
 
-  //Get api with authentication
+  /// GET API with authentication
   Future<http.Response> getWithAuthApi(String path) async {
-    print("my token is here >>>>");
-    print(storage.read("token"));
-
-    var response = await http.get(
-      Uri.parse(path),
-      headers: {
-        "content-type": "application/json",
-        "accept": "application/json",
-        "Authorization": 'Bearer ${storage.read("token")}',
-      },
-    );
-
-    return response;
+    final headers = await _getHeaders(withAuth: true);
+    print("🔑 Token Used: ${headers['Authorization']}");
+    final response = await http.get(Uri.parse(path), headers: headers);
+    return _handleResponse(response);
   }
 
+  /// GET API without authentication
   Future<http.Response> getApi(String path) async {
-    var response = await http.get(
+    final response = await http.get(
       Uri.parse(path),
-      headers: {
-        "content-type": "application/json",
-        "accept": "application/json",
-      },
+      headers: await _getHeaders(),
     );
-
-    return response;
+    return _handleResponse(response);
   }
 
-
-  Future<http.Response> postWithToken(String fullUrl, Map<String, dynamic> body) async {
-
-    final token = storage.read("token");
-    print(token);
+  /// POST with token (Map body)
+  Future<http.Response> postWithToken(
+      String fullUrl, Map<String, dynamic> body) async {
     final response = await http.post(
       Uri.parse(fullUrl),
       body: jsonEncode(body),
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        "Authorization": 'Bearer $token',
-      },
+      headers: await _getHeaders(withAuth: true),
     );
-
-    return response;
+    return _handleResponse(response);
   }
 
+  /// POST Multipart with Authentication (File Upload)
+  Future<http.Response> postMultipartApiWithAuth(
+    String url,
+    Map<String, String> fields, {
+    String fileKey = "file",
+    File? file,
+  }) async {
+    final token = await getToken();
+    var request = http.MultipartRequest("POST", Uri.parse(url));
+    request.headers["Authorization"] = "Bearer $token";
+    request.fields.addAll(fields);
+
+    if (file != null) {
+      request.files.add(await http.MultipartFile.fromPath(fileKey, file.path));
+    }
+
+    final streamedResponse = await request.send();
+    final response = await http.Response.fromStream(streamedResponse);
+    return _handleResponse(response);
+  }
 }

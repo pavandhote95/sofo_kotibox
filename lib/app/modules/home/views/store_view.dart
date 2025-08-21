@@ -171,23 +171,16 @@ class StoreView extends GetView<StoreController> {
                     child: Column(
                       children: [
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                
                           children: [
                             Text(
                               'Popular Items',
-                              style: AppTextStyle.montserrat(fs: 16, fw: FontWeight.bold),
+                              style: AppTextStyle.montserrat(fs: 22, fw: FontWeight.bold),
                             ),
                           ],
                         ),
-                        SizedBox(height: 12),
-                        Text(
-                          'Popular items not yet implemented. Add storeItems to StoreItem model.',
-                          style: AppTextStyle.montserrat(
-                            fs: 14,
-                            fw: FontWeight.w500,
-                            c: AppColor.greyText,
-                          ),
-                        ),
+                
+                      
                       ],
                     ),
                   ),
@@ -197,14 +190,8 @@ class StoreView extends GetView<StoreController> {
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('Popular Items',
-                                style: AppTextStyle.montserrat(fs: 16, fw: FontWeight.bold)),
-                          ],
-                        ),
-                        SizedBox(height: 12),
+                      
+                  
                         Obx(() {
                           var items = controller.storeItems;
 
@@ -224,124 +211,124 @@ class StoreView extends GetView<StoreController> {
                             );
                           }
 
-                          return GridView.builder(
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            itemCount: items.length,
-                            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                              maxCrossAxisExtent: 200,
-                              mainAxisSpacing: 16,
-                              crossAxisSpacing: 16,
-                              childAspectRatio: 0.75,
-                            ),
-                            itemBuilder: (context, index) {
-                              var item = items[index];
-                              return GestureDetector(
-                                onTap: () => Get.to(() => ProductDetailsView(item: item)),
-                                child: Container(
-                                  padding: EdgeInsets.all(6),
-                                  decoration: BoxDecoration(
-                                    color: AppColor.white,
-                                    borderRadius: BorderRadius.circular(12),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black12,
-                                        blurRadius: 6,
-                                        offset: Offset(0, 2),
-                                      )
-                                    ],
-                                  ),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Container(
-                                        height: 100,
-                                        width: double.infinity,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(12),
-                                          color: AppColor.grey,
-                                        ),
-                                        child: CachedNetworkImage(
-                                          imageUrl: item['image'] ?? '',
-                                          fit: BoxFit.cover,
-                                          placeholder: (context, url) =>
-                                              Center(child: CustomLoadingIndicator()),
-                                          errorWidget: (context, url, error) => Center(
-                                            child: Text(
-                                              'No Image',
-                                              style: AppTextStyle.montserrat(
-                                                fs: 14,
-                                                c: AppColor.greyText,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(height: 8),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Expanded(
-                                            child: Text(
-                                              item['name'] ?? '',
-                                              style: AppTextStyle.montserrat(
-                                                fs: 13,
-                                                fw: FontWeight.bold,
-                                              ),
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
-                                          SizedBox(width: 5),
-                                          Text(
-                                            item['brand'] ?? 'No Brand',
-                                            style: AppTextStyle.montserrat(
-                                              fs: 13,
-                                              c: AppColor.orange,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(height: 5),
-                                      Align(
-                                        alignment: AlignmentDirectional.centerEnd,
-                                        child: Text(
-                                          '₹${item['price'] ?? ''}',
-                                          style: AppTextStyle.montserrat(
-                                            fs: 13,
-                                            c: AppColor.orange,
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(height: 5),
-                                      GestureDetector(
-                                        onTap: () {
-                                          // Add to cart or buy
-                                        },
-                                        child: Container(
-                                          width: double.infinity,
-                                          padding: EdgeInsets.symmetric(vertical: 4),
-                                          decoration: BoxDecoration(
-                                            color: AppColor.orange,
-                                            borderRadius: BorderRadius.circular(30),
-                                          ),
-                                          child: Center(
-                                            child: Text(
-                                              'Buy now',
-                                              style: AppTextStyle.montserrat(
-                                                fs: 11,
-                                                c: AppColor.white,
-                                                fw: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
-                          );
+                          return     GridView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: items.length,
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 189,
+        mainAxisSpacing: 12,
+        crossAxisSpacing: 12,
+        childAspectRatio: 1.1,
+      ),
+      itemBuilder: (context, index) {
+        var item = items[index];
+        return Container(
+          padding: EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: AppColor.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black12,
+                blurRadius: 6,
+                offset: Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Product Image
+              Expanded(
+                child: InkWell(
+                  onTap: () {
+                    Get.to(() => ProductDetailsView(item: item));
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: AppColor.grey,
+                    ),
+                    child: CachedNetworkImage(
+                      imageUrl: item['image'] ?? '',
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) =>
+                          Center(child: CustomLoadingIndicator()),
+                      errorWidget: (context, url, error) => Center(
+                        child: Text(
+                          'No Image',
+                          style: AppTextStyle.montserrat(
+                            fs: 12,
+                            c: AppColor.greyText,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 8),
+
+              // Item Name & Price
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      item['name'] ?? 'Item Name',
+                      style: AppTextStyle.montserrat(
+                        fs: 13,
+                        fw: FontWeight.w500,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  SizedBox(width: 4),
+                  Text(
+                    "₹${item['price'] ?? '0'}",
+                    style: AppTextStyle.montserrat(
+                      fs: 13,
+                      fw: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+
+              SizedBox(height: 6),
+
+              // Buy Now Button
+              GestureDetector(
+                onTap: () {
+                  Get.to(() => ProductDetailsView(item: item));
+                  // Buy Now action
+                },
+                child: Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.symmetric(vertical: 6),
+                  decoration: BoxDecoration(
+                    color: AppColor.orange,
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Buy now',
+                      style: AppTextStyle.montserrat(
+                        fs: 12,
+                        c: AppColor.white,
+                        fw: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
                         }),
                         SizedBox(height: 10),
                       ],

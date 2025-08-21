@@ -2,8 +2,7 @@
   import 'package:flutter/material.dart';
   import 'package:get/get.dart';
 import 'package:sofo/app/modules/Dashboard/controllers/dashboard_controller.dart';
-import 'package:sofo/app/modules/Dashboard/views/dashboard_view.dart';
-import 'package:sofo/app/modules/cart/views/cart_view.dart';
+
 import 'package:sofo/app/routes/app_pages.dart';
   import '../../../../custom_widgets/app_color.dart';
   import '../../../../custom_widgets/custom_button.dart';
