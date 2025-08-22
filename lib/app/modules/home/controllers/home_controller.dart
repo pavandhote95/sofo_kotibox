@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:sofo/app/modules/account/controllers/account_controller.dart';
 import '../../../custom_widgets/api_url.dart';
 import '../../../custom_widgets/auth_helper.dart';
 import '../../../custom_widgets/snacbar.dart';
@@ -30,6 +31,7 @@ class HomeController extends GetxController with GetTickerProviderStateMixin {
     getCategoryName();
     fetchLocationAndAddress();
     fetchCurrentLocation();
+    AccountController().fetchUserProfile();
     // ✅ Only start the service status stream if not running on Web
     if (!kIsWeb) {
       _serviceStatusStream =

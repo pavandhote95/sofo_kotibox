@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:sofo/app/custom_widgets/curved_top_container.dart';
+import 'package:sofo/app/modules/account/controllers/account_controller.dart';
 import 'package:sofo/app/modules/home/views/store_view.dart';
 import '../../../custom_widgets/app_color.dart';
 import '../../../custom_widgets/loder.dart';
@@ -18,6 +19,9 @@ class HomeView extends GetView<HomeController> {
   @override
   HomeController controller = Get.put(HomeController());
 
+  // ✅ Use existing AccountController
+  final AccountController accountController = Get.put(AccountController());
+
   @override
   Widget build(BuildContext context) {
     return Obx(() {
@@ -25,7 +29,7 @@ class HomeView extends GetView<HomeController> {
         return const Center(child: CustomLoadingIndicator());
       }
       return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle(
+        value: const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
           statusBarIconBrightness: Brightness.dark,
         ),
@@ -35,6 +39,7 @@ class HomeView extends GetView<HomeController> {
             color: AppColor.orange,
             onRefresh: () async {
               await controller.getCategoryName();
+              await accountController.fetchUserProfile(); // 🔄 refresh profile too
             },
             child: Scaffold(
               backgroundColor: AppColor.backgroundColor,
@@ -51,6 +56,7 @@ class HomeView extends GetView<HomeController> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          /// --- Header Section ---
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -65,13 +71,16 @@ class HomeView extends GetView<HomeController> {
                                       fw: FontWeight.w400,
                                     ),
                                   ),
-                                  Text(
-                                    "William Jones",
-                                    style: AppTextStyle.montserrat(
-                                      fs: 18,
-                                      fw: FontWeight.w600,
-                                    ),
-                                  ),
+                                  // ✅ Show profile name
+                                  Obx(() => Text(
+                                        accountController.name.value.isNotEmpty
+                                            ? accountController.name.value
+                                            : "Loading...",
+                                        style: AppTextStyle.montserrat(
+                                          fs: 18,
+                                          fw: FontWeight.w600,
+                                        ),
+                                      )),
                                 ],
                               ),
                               Row(
@@ -119,7 +128,10 @@ class HomeView extends GetView<HomeController> {
                               ),
                             ],
                           ),
+
                           const SizedBox(height: 10),
+
+                          /// --- Location Row ---
                           Material(
                             elevation: 0.5,
                             borderRadius: BorderRadius.circular(18),
@@ -151,20 +163,18 @@ class HomeView extends GetView<HomeController> {
                                         Get.to(SelectLocationView());
                                       },
                                       child: Obx(
-                                            () =>
-                                            Text(
-                                              controller.currentAddress.value
+                                        () => Text(
+                                          controller.currentAddress.value
                                                   .isNotEmpty
-                                                  ? controller.currentAddress
-                                                  .value
-                                                  : "Fetching location...",
-                                              style: AppTextStyle.montserrat(
-                                                fs: 13,
-                                                c: AppColor.greyText,
-                                              ),
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
+                                              ? controller.currentAddress.value
+                                              : "Fetching location...",
+                                          style: AppTextStyle.montserrat(
+                                            fs: 13,
+                                            c: AppColor.greyText,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -182,23 +192,24 @@ class HomeView extends GetView<HomeController> {
                               ),
                             ),
                           ),
+
                           const SizedBox(height: 12),
 
-                          /// TabBar
+                          /// --- TabBar ---
                           Align(
                             alignment: Alignment.centerLeft,
                             child: TabBar(
                               isScrollable: true,
                               tabAlignment: TabAlignment.start,
                               labelPadding:
-                              const EdgeInsets.symmetric(horizontal: 10),
+                                  const EdgeInsets.symmetric(horizontal: 10),
                               indicatorPadding: EdgeInsets.zero,
                               labelColor: AppColor.orange,
                               unselectedLabelColor: AppColor.greyText,
                               labelStyle: AppTextStyle.montserrat(
                                   fs: 14, fw: FontWeight.w600),
                               unselectedLabelStyle:
-                              AppTextStyle.montserrat(fs: 14),
+                                  AppTextStyle.montserrat(fs: 14),
                               indicatorColor: AppColor.orange,
                               tabs: controller.storeCategory.map((category) {
                                 return Tab(
@@ -212,10 +223,13 @@ class HomeView extends GetView<HomeController> {
                                           width: 30,
                                           height: 30,
                                           fit: BoxFit.cover,
-                                          errorBuilder: (context, error,
-                                              stackTrace) =>
-                                              Icon(Icons.image_not_supported,
-                                                  size: 30, color: Colors.grey),
+                                          errorBuilder:
+                                              (context, error, stackTrace) =>
+                                                  const Icon(
+                                            Icons.image_not_supported,
+                                            size: 30,
+                                            color: Colors.grey,
+                                          ),
                                         ),
                                       ),
                                       Text(
@@ -227,11 +241,10 @@ class HomeView extends GetView<HomeController> {
                                 );
                               }).toList(),
                               onTap: (index) {
-                                final selectedId = controller
-                                    .storeCategory[index].id
-                                    .toString();
-                                controller.selectedCategoryId.value =
-                                    selectedId;
+                                final selectedId =
+                                    controller.storeCategory[index].id
+                                        .toString();
+                                controller.selectedCategoryId.value = selectedId;
                                 controller.getStoreList(selectedId);
                               },
                             ),
@@ -239,7 +252,7 @@ class HomeView extends GetView<HomeController> {
 
                           const SizedBox(height: 16),
 
-                          /// Store Cards List
+                          /// --- Store List ---
                           Expanded(
                             child: ListView(
                               padding: EdgeInsets.zero,
@@ -256,12 +269,9 @@ class HomeView extends GetView<HomeController> {
                                   var storeData =
                                       controller.storeList.value.data;
 
-                                  // Check for null or empty data
-
-                                  // Show list if data is available
                                   return ListView.builder(
                                     physics:
-                                    const NeverScrollableScrollPhysics(),
+                                        const NeverScrollableScrollPhysics(),
                                     shrinkWrap: true,
                                     padding: EdgeInsets.zero,
                                     itemCount: storeData.length,
@@ -270,58 +280,76 @@ class HomeView extends GetView<HomeController> {
                                       return GestureDetector(
                                         onTap: () {
                                           Get.to(() => StoreView(
-                                            storeListData: storeItem,
-                                          ));
+                                                storeListData: storeItem,
+                                              ));
                                         },
                                         child: Padding(
-                                          padding:
-                                          const EdgeInsets.all(5),
+                                          padding: const EdgeInsets.all(5),
                                           child: Material(
                                             elevation: 4,
                                             borderRadius:
-                                            BorderRadius.circular(5),
+                                                BorderRadius.circular(5),
                                             child: Container(
                                               decoration: BoxDecoration(
                                                 color: AppColor.white,
                                                 borderRadius:
-                                                BorderRadius.circular(8),
+                                                    BorderRadius.circular(8),
                                               ),
                                               child: Column(
                                                 crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                                    CrossAxisAlignment.start,
                                                 children: [
-                                                  // Inside your widget:
                                                   ClipRRect(
-                                                    borderRadius: const BorderRadius.only(
-                                                      topRight: Radius.circular(5),
-                                                      topLeft: Radius.circular(5),
+                                                    borderRadius:
+                                                        const BorderRadius.only(
+                                                      topRight:
+                                                          Radius.circular(5),
+                                                      topLeft:
+                                                          Radius.circular(5),
                                                     ),
                                                     child: CachedNetworkImage(
-                                                      imageUrl: storeItem.shopImage.toString(),
+                                                      imageUrl: storeItem
+                                                          .shopImage
+                                                          .toString(),
                                                       height: 180,
                                                       width: double.infinity,
                                                       fit: BoxFit.cover,
-                                                      placeholder: (context, url) => Container(
+                                                      placeholder:
+                                                          (context, url) =>
+                                                              Container(
                                                         height: 180,
-                                                        alignment: Alignment.center,
-                                                        child: CircularProgressIndicator(strokeWidth: 5,color: AppColor.orange,),
+                                                        alignment:
+                                                            Alignment.center,
+                                                        child:
+                                                            CircularProgressIndicator(
+                                                          strokeWidth: 5,
+                                                          color: AppColor.orange,
+                                                        ),
                                                       ),
-                                                      errorWidget: (context, url, error) => Container(
+                                                      errorWidget: (context,
+                                                              url, error) =>
+                                                          Container(
                                                         height: 180,
-                                                        alignment: Alignment.center,
+                                                        alignment:
+                                                            Alignment.center,
                                                         color: Colors.grey[200],
-                                                        child: Icon(Icons.image_not_supported, size: 40, color: Colors.grey),
+                                                        child: const Icon(
+                                                          Icons
+                                                              .image_not_supported,
+                                                          size: 40,
+                                                          color: Colors.grey,
+                                                        ),
                                                       ),
                                                     ),
                                                   ),
                                                   Padding(
                                                     padding:
-                                                    const EdgeInsets.all(
-                                                        16.0),
+                                                        const EdgeInsets.all(
+                                                            16.0),
                                                     child: Column(
                                                       crossAxisAlignment:
-                                                      CrossAxisAlignment
-                                                          .start,
+                                                          CrossAxisAlignment
+                                                              .start,
                                                       children: [
                                                         Row(
                                                           children: [
@@ -335,8 +363,7 @@ class HomeView extends GetView<HomeController> {
                                                                     .w600,
                                                               ),
                                                             ),
-                                                            Spacer(),
-
+                                                            const Spacer(),
                                                             Text(
                                                               storeItem
                                                                   .categories
@@ -355,9 +382,7 @@ class HomeView extends GetView<HomeController> {
                                                         Row(
                                                           children: [
                                                             Text(
-                                                              "Shop Time: ${storeItem
-                                                                  .shoptime
-                                                                  .toString()}",
+                                                              "Shop Time: ${storeItem.shoptime}",
                                                               style: AppTextStyle
                                                                   .montserrat(
                                                                 fs: 12,
@@ -365,12 +390,9 @@ class HomeView extends GetView<HomeController> {
                                                                     .w600,
                                                               ),
                                                             ),
-Spacer(),
+                                                            const Spacer(),
                                                             Text(
-                                                              "Rating: ${storeItem
-                                                                  .rating
-                                                                  .toString()}",
-
+                                                              "Rating: ${storeItem.rating}",
                                                               style: AppTextStyle
                                                                   .montserrat(
                                                                 fs: 12,
