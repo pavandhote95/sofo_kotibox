@@ -191,7 +191,7 @@ Future<void> updateAddress(Position position) async {
       final responseJson = json.decode(response.body);
       if (response.statusCode == 200) {
         // Handle fetched store list here
-        print('Store List Response: ${response.body}');
+        print('Store List Responsepppppppppppppppp: ${response.body}');
         // Add your store list parsing logic
          storeList.value = storeListFromJson(response.body);
       } else if (response.statusCode == 401) {

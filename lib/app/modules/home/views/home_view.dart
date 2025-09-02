@@ -24,6 +24,11 @@ class HomeView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
+    String capitalize(String s) {
+  if (s.isEmpty) return s;
+  return s[0].toUpperCase() + s.substring(1);
+}
+
     return Obx(() {
       if (controller.storeCategory.isEmpty) {
         return const Center(child: CustomLoadingIndicator());
@@ -72,15 +77,25 @@ class HomeView extends GetView<HomeController> {
                                     ),
                                   ),
                                   // ✅ Show profile name
-                                  Obx(() => Text(
-                                        accountController.name.value.isNotEmpty
-                                            ? accountController.name.value
-                                            : "Loading...",
-                                        style: AppTextStyle.montserrat(
-                                          fs: 18,
-                                          fw: FontWeight.w600,
-                                        ),
-                                      )),
+     Obx(() => AnimatedSwitcher(
+      duration: const Duration(milliseconds: 600),
+      transitionBuilder: (child, animation) => FadeTransition(
+        opacity: animation,
+        child: child,
+      ),
+      child: Text(
+        accountController.name.value.isNotEmpty
+            ? "Hi, ${capitalize(accountController.name.value)}!"
+            : "Loading...",
+        key: ValueKey(accountController.name.value),
+        style: AppTextStyle.montserrat(
+          fs: 18,
+          fw: FontWeight.w600,
+        ),
+      ),
+    ),
+),
+
                                 ],
                               ),
                               Row(
