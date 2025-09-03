@@ -183,39 +183,39 @@ _buildSettingItem(
                     const SizedBox(height: 50),
 
                     /// Logout
-                    SizedBox(
-                      width: double.infinity,
-                      height: 48,
-                      child: OutlinedButton(
-                        onPressed: controller.isLoading.value
-                            ? null
-                            : () => controller.postLogOut(),
-                        style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: AppColor.orange),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
-                        child: controller.isLoading.value
-                            ? SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2.5,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                      AppColor.orange),
-                                ),
-                              )
-                            : Text(
-                                "Log Out",
-                                style: AppTextStyle.montserrat(
-                                  fs: 16,
-                                  fw: FontWeight.w600,
-                                  c: AppColor.orange,
-                                ),
-                              ),
-                      ),
-                    ),
+                Obx(() => SizedBox(
+      width: double.infinity,
+      height: 48,
+      child: OutlinedButton(
+        onPressed: controller.isLoading.value
+            ? null
+            : () => controller.postLogOut(),
+        style: OutlinedButton.styleFrom(
+          side: BorderSide(color: AppColor.orange),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+        ),
+        child: controller.isLoading.value
+            ? SizedBox(
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.5,
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColor.orange),
+                ),
+              )
+            : Text(
+                "Log Out",
+                style: AppTextStyle.montserrat(
+                  fs: 16,
+                  fw: FontWeight.w600,
+                  c: AppColor.orange,
+                ),
+              ),
+      ),
+    )),
+
                     const SizedBox(height: 30),
                   ],
                 ),

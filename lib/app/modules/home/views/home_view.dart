@@ -24,9 +24,18 @@ class HomeView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
+String limitLetters(String text, int letterLimit) {
+  if (text.length <= letterLimit) {
+    return text; // अगर text chhota hai to pura dikhao
+  } else {
+    return text.substring(0, letterLimit) + "...";
+  }
+}
+
     String capitalize(String s) {
   if (s.isEmpty) return s;
   return s[0].toUpperCase() + s.substring(1);
+
 }
 
     return Obx(() {
@@ -336,10 +345,7 @@ class HomeView extends GetView<HomeController> {
                                                         alignment:
                                                             Alignment.center,
                                                         child:
-                                                            CircularProgressIndicator(
-                                                          strokeWidth: 5,
-                                                          color: AppColor.orange,
-                                                        ),
+                                                            Center(child: CustomLoadingIndicator()),
                                                       ),
                                                       errorWidget: (context,
                                                               url, error) =>
@@ -368,16 +374,14 @@ class HomeView extends GetView<HomeController> {
                                                       children: [
                                                         Row(
                                                           children: [
-                                                            Text(
-                                                              storeItem.shopName
-                                                                  .toString(),
-                                                              style: AppTextStyle
-                                                                  .montserrat(
-                                                                fs: 16,
-                                                                fw: FontWeight
-                                                                    .w600,
-                                                              ),
-                                                            ),
+                                                       Text(
+  limitLetters(storeItem.shopName.toString(), 15), // 🔹 2 letters + "..."
+  style: AppTextStyle.montserrat(
+    fs: 15,
+    fw: FontWeight.w600,
+  ),
+),
+
                                                             const Spacer(),
                                                             Text(
                                                               storeItem
