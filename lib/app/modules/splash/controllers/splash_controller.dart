@@ -4,6 +4,7 @@ import '../../../routes/app_pages.dart';
 
 class SplashController extends GetxController {
   final box = GetStorage();
+
   @override
   void onInit() {
     super.onInit();
@@ -12,17 +13,20 @@ class SplashController extends GetxController {
 
   void _navigateAfterDelay() async {
     await Future.delayed(const Duration(seconds: 2));
-    final hasSeenOnboarding = box.read('seen_onboarding') ?? false;
-    final isLoggedIn = box.read('isLogin') ?? false;
+
+    final bool hasSeenOnboarding = box.read('seen_onboarding') ?? false;
+    final bool isLoggedIn = box.read('isLogin') ?? false;
+
     if (!hasSeenOnboarding) {
-      box.write('seen_onboarding', true);
+      // ✅ Save that onboarding has been shown
+      await box.write('seen_onboarding', true);
       Get.offAllNamed(Routes.ONBOARDING);
+    } else if (isLoggedIn) {
+      // ✅ Token / login state available
+      Get.offAllNamed(Routes.DASHBOARD);
     } else {
-      if (isLoggedIn) {
-        Get.offAllNamed(Routes.DASHBOARD);
-      } else {
-        Get.offAllNamed(Routes.LOGIN);
-      }
+      // ✅ Not logged in
+      Get.offAllNamed(Routes.LOGIN);
     }
   }
 }
