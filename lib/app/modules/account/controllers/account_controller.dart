@@ -26,41 +26,37 @@ class AccountController extends GetxController {
     fetchUserProfile();
   }
 
-Future<void> fetchUserProfile() async {
-  try {
-    isLoading(true);
-    RestApi restApi = RestApi();
-    final response = await restApi.getWithAuthApi(
-      "https://kotiboxglobaltech.com/sofo_app/api/auth/user-profile",
-    );
+  Future<void> fetchUserProfile() async {
+    try {
+      isLoading(true);
+      RestApi restApi = RestApi();
+      final response = await restApi.getWithAuthApi(
+        "https://kotiboxglobaltech.com/sofo_app/api/auth/user-profile",
+      );
 
-    final data = json.decode(response.body);
+      final data = json.decode(response.body);
 
+      if (data["status"] == true) {
+        final profile = data["data"];
+        userid.value = profile["id"].toString();
+        name.value = profile["name"] ?? '';
+        email.value = profile["email"] ?? '';
+        mobile.value = profile["mobile"] ?? '';
+        profileImageUrl.value = profile["profile_image_url"] ?? '';
+        becomeVendor.value = profile["become_vendor"] ?? '';
+        vendorStatus.value = profile["vendor_status"] ?? '';
 
-    if (data["status"] == true) {
-
-
-      final profile = data["data"];
-      userid.value = profile["id"].toString() ?? '';
-      name.value = profile["name"] ?? '';
-      email.value = profile["email"] ?? '';
-      mobile.value = profile["mobile"] ?? '';
-      profileImageUrl.value = profile["profile_image_url"] ?? '';
-      becomeVendor.value = profile["become_vendor"] ;
-      vendorStatus.value = profile["vendor_status"] ?? '';
-       print(profile);
-      storage.write('userid', userid);
-      print(storage.read('userid'));
-
-    } else {
-      Utils.showErrorSnackbar("Failed", data["message"] ?? "Failed to fetch profile");
+        storage.write('userid', userid.value);
+      } else {
+        Utils.showErrorSnackbar(
+            "Failed", data["message"] ?? "Failed to fetch profile");
+      }
+    } catch (e) {
+      debugPrint("❌ Error fetching profile: $e");
+    } finally {
+      isLoading(false);
     }
-  } catch (e) {
-    debugPrint("❌ Error fetching profile: $e");
-  } finally {
-    isLoading(false);
   }
-}
 
   void postLogOut() async {
     try {
@@ -69,10 +65,13 @@ Future<void> fetchUserProfile() async {
       final response = await restApi.postApiWithAuth(postLogout, "");
       final responseJson = json.decode(response.body);
 
-      if ((response.statusCode == 200 || response.statusCode == 201) && responseJson["status"] == true) {
+      if ((response.statusCode == 200 || response.statusCode == 201) &&
+          responseJson["status"] == true) {
         Utils.showToast(responseJson["message"] ?? "Logout successful");
-        storage.write('isLogin', false);
-        storage.write('token', '');
+
+        // ✅ clear session
+        storage.erase();
+
         Get.offAllNamed(Routes.LOGIN);
       } else {
         isLoading(false);
@@ -86,11 +85,13 @@ Future<void> fetchUserProfile() async {
           Utils.showErrorSnackbar("Validation Error", errorMessages.trim());
         } else {
           Get.offAllNamed(Routes.LOGIN);
-          Utils.showErrorSnackbar("Error", responseJson["message"] ?? "Logout failed! Try again.");
+          Utils.showErrorSnackbar(
+              "Error", responseJson["message"] ?? "Logout failed! Try again.");
         }
       }
     } catch (e) {
-      Utils.showErrorSnackbar("Exception", "Something went wrong. Please try again.");
+      Utils.showErrorSnackbar(
+          "Exception", "Something went wrong. Please try again.");
     } finally {
       isLoading(false);
     }

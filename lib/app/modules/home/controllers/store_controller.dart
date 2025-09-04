@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:sofo/app/modules/Dashboard/views/dashboard_view.dart';
 import '../../../custom_widgets/api_url.dart';
 import '../../../custom_widgets/auth_helper.dart';
 import '../../../custom_widgets/snacbar.dart';

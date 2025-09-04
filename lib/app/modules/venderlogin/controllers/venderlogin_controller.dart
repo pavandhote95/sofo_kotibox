@@ -5,7 +5,7 @@
   import 'package:get_storage/get_storage.dart';
   import 'package:image_picker/image_picker.dart';
   import 'package:http/http.dart' as http;
-import 'package:sofo/app/modules/Dashboard/views/dashboard_view.dart';
+import 'package:sofo/app/modules/vendor_registration_success/views/vendor_registration_success_view.dart';
   import '../../../custom_widgets/api_url.dart';
   import '../../../custom_widgets/auth_helper.dart';
   import '../../../custom_widgets/snacbar.dart';
@@ -169,7 +169,7 @@ import 'package:sofo/app/modules/Dashboard/views/dashboard_view.dart';
         if (response.statusCode == 201) {
           Get.snackbar('Success', decoded['message'] ?? 'Vendor registered successfully');
 
-          Get.to(() => DashboardView());
+          Get.to(() => VendorRegistrationSuccessView());
 
       } else {
           Get.snackbar('Error', decoded['message'] ?? 'Something went wrong');

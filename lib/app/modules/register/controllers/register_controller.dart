@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sofo/app/modules/login/controllers/login_controller.dart';
 import '../../../custom_widgets/api_url.dart';
 import '../../../custom_widgets/snacbar.dart';
 import '../../../routes/app_pages.dart';
@@ -35,8 +36,14 @@ class RegisterController extends GetxController {
       RestApi restApi = RestApi();
       var response = await restApi.postApi(postRegisterUrl, request);
       var responseJson = json.decode(response.body);
+
       if (response.statusCode == 201 && responseJson['status'] == true) {
         Utils.showToast(responseJson["message"]);
+
+        /// delete previous login controller so fields reinitialize
+        Get.delete<LoginController>(force: true);
+
+        /// go back to login
         Get.offAllNamed(Routes.LOGIN);
       } else {
         isLoading(false);
@@ -59,5 +66,4 @@ class RegisterController extends GetxController {
       isLoading(false);
     }
   }
-
 }

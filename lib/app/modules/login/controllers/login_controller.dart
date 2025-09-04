@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-
 import '../../../custom_widgets/api_url.dart';
 import '../../../custom_widgets/snacbar.dart';
 import '../../../routes/app_pages.dart';
@@ -57,24 +56,18 @@ class LoginController extends GetxController {
       var responseJson = json.decode(response.body);
 
       if (response.statusCode == 201 && responseJson['status'] == true) {
-        // ✅ Extract values
         final token = responseJson['data']['token'];
         final userData = responseJson['data']['user'] ?? {};
         final int userId = userData['id'] ?? 0;
         final String name = userData['name'] ?? "";
         final String email = userData['email'] ?? "";
 
-        // ✅ Save in storage
+        // ✅ Save session
         storage.write('isLogin', true);
         storage.write('token', token);
         storage.write('userId', userId);
         storage.write('userName', name);
         storage.write('userEmail', email);
-
-        debugPrint("📦 Token: $token");
-        debugPrint("🆔 UserId: $userId");
-        debugPrint("👤 Name: $name");
-        debugPrint("📧 Email: $email");
 
         Utils.showToast(responseJson["message"] ?? "Login successful");
         Get.offAllNamed(Routes.DASHBOARD);
