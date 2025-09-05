@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:sofo/app/custom_widgets/curved_top_container.dart';
 import 'package:sofo/app/modules/VendorDashboard/views/vendor_dashboard_view.dart';
 import 'package:sofo/app/modules/all_address_list/views/all_address_list_view.dart';
+import 'package:sofo/app/modules/vendor_registration_success/views/vendor_registration_success_view.dart';
 import '../../../custom_widgets/app_color.dart';
 import '../../../custom_widgets/text_fonts.dart';
 import '../../notification/note_permission.dart';
@@ -149,37 +150,55 @@ _buildSettingItem(
                       onTap: () => Get.to(() => AllAddressListView()),
                     ),
                     const SizedBox(height: 15),
+                    
 
                     /// Vendor Buttons
-                    Obx(() {
-                      final vendorValue = controller.becomeVendor.value;
-                      if (vendorValue == '0' || vendorValue == "1") {
-                        return Column(
-                          children: [
-                            _buildSettingItem(
-                              icon: CupertinoIcons.briefcase,
-                              text: "Become a Vendor",
-                              onTap: () => Get.to(() => VendorRegisterView()),
-                            ),
-                            const SizedBox(height: 15),
-                          ],
-                        );
-                      } else if (vendorValue == '2') {
-                        return Column(
-                          children: [
-                            _buildSettingItem(
-                              icon: CupertinoIcons.rectangle_stack_person_crop,
-                              text: "Vendor Dashboard",
-                              onTap: () => Get.to(() =>
-                                  VendorDashboardView(controller.userid)),
-                            ),
-                            const SizedBox(height: 15),
-                          ],
-                        );
-                      } else {
-                        return const SizedBox.shrink();
-                      }
-                    }),
+        /// Vendor Buttons
+Obx(() {
+  final vendorValue = controller.becomeVendor.value;
+
+  if (vendorValue == '0') {
+    // Vendor Registration
+    return Column(
+      children: [
+        _buildSettingItem(
+          icon: CupertinoIcons.briefcase,
+          text: "Become a Vendor",
+          onTap: () => Get.to(() => VendorRegisterView()),
+        ),
+        const SizedBox(height: 15),
+      ],
+    );
+  } else if (vendorValue == '1') {
+    // Vendor Registration Success
+    return Column(
+      children: [
+        _buildSettingItem(
+          icon: CupertinoIcons.check_mark_circled,
+          text: "Vendor Registration Status",
+          onTap: () => Get.to(() => VendorRegistrationSuccessView()),
+        ),
+        const SizedBox(height: 15),
+      ],
+    );
+  } else if (vendorValue == '2') {
+    // Vendor Dashboard
+    return Column(
+      children: [
+        _buildSettingItem(
+          icon: CupertinoIcons.rectangle_stack_person_crop,
+          text: "Vendor Dashboard",
+          onTap: () => Get.to(() => VendorDashboardView(controller.userid)),
+        ),
+        const SizedBox(height: 15),
+      ],
+    );
+  } else {
+    return const SizedBox.shrink();
+  }
+}),
+
+                  
                     const SizedBox(height: 50),
 
                     /// Logout

@@ -48,10 +48,14 @@ import '../modules/profile/bindings/profile_binding.dart';
 import '../modules/profile/views/profile_view.dart';
 import '../modules/searching/bindings/searching_binding.dart';
 import '../modules/searching/views/searching_view.dart';
+import '../modules/shop_products/bindings/shop_products_binding.dart';
+import '../modules/shop_products/views/shop_products_view.dart';
 import '../modules/splash/bindings/splash_binding.dart';
 import '../modules/splash/views/splash_view.dart';
 import '../modules/venderlogin/bindings/venderlogin_binding.dart';
 import '../modules/venderlogin/views/venderRegister_view.dart';
+import '../modules/vendor_all_shops/bindings/vendor_all_shops_binding.dart';
+import '../modules/vendor_all_shops/views/vendor_all_shops_view.dart';
 import '../modules/vendor_customers/bindings/vendor_customers_binding.dart';
 import '../modules/vendor_customers/views/vendor_customers_view.dart';
 import '../modules/vendor_registration_success/bindings/vendor_registration_success_binding.dart';
@@ -241,5 +245,22 @@ class AppPages {
       page: () => const VendorRegistrationSuccessView(),
       binding: VendorRegistrationSuccessBinding(),
     ),
+    GetPage(
+      name: _Paths.VENDOR_ALL_SHOPS,
+      page: () => VendorAllShopsView(),
+      binding: VendorAllShopsBinding(),
+    ),
+   GetPage(
+  name: _Paths.SHOP_PRODUCTS,
+  page: () {
+    final args = Get.arguments as Map<String, dynamic>;
+    return ShopProductsView(
+      storeId: args["storeId"],
+      shopName: args["shopName"],
+    );
+  },
+  binding: ShopProductsBinding(),
+),
+
   ];
 }

@@ -61,7 +61,6 @@ import 'package:sofo/app/modules/vendor_registration_success/views/vendor_regist
       shopRatingController.dispose();
       shopTimingFocus.dispose();
       shopRatingFocus.dispose();
-
       super.onClose();
     }
 
@@ -117,68 +116,64 @@ import 'package:sofo/app/modules/vendor_registration_success/views/vendor_regist
       otherCategoryController.clear();
     }
 
-    void vendorRegister() async {
-      try {
-        isLoading(true);
+void vendorRegister() async {
+  try {
+    isLoading(true);
 
-
-        if (selectedImage.value != null) {
-          print("🖼️ Selected Image Path: ${selectedImage.value!.path}");
-        } else {
-          print("⚠️ No image selected");
-        }
-
-        final token = GetStorage().read('token');
-        print("🔐 Token: $token");
-
-        final uri = Uri.parse(postvendorLoginUrl);
-        final request = http.MultipartRequest('POST', uri);
-
-        request.headers['Authorization'] = 'Bearer $token';
-        request.headers['Accept'] = 'application/json';
-
-        // Add basic fields
-        request.fields['shop_name'] = shopNameController.text.trim();
-        request.fields['gst_no'] = gstController.text.trim();
-        request.fields['pan_no'] = panController.text.trim();
-        request.fields['tanno'] = tanController.text.trim();
-        request.fields['address'] = addressController.text.trim();
-        request.fields['categories'] = selectedCategoryId.value.toString(); // ✅ only 1 ID
-        request.fields['shop_time'] = shopTimingController.text.trim();
-        request.fields['rating'] = shopRatingController.text.trim();
-
-
-        // Add other category if needed
-        request.fields['other_category'] = selectedCategoryName.value == 'Other'
-            ? otherCategoryController.text.trim()
-            : '';
-
-        // Add image if selected
-        if (selectedImage.value != null) {
-          request.files.add(await http.MultipartFile.fromPath(
-            'shop_image',
-            selectedImage.value!.path,
-          ));
-        }
-
-        // Send request and handle response
-        final response = await request.send();
-        final respStr = await response.stream.bytesToString();
-        final decoded = json.decode(respStr);
-
-        if (response.statusCode == 201) {
-          Get.snackbar('Success', decoded['message'] ?? 'Vendor registered successfully');
-
-          Get.to(() => VendorRegistrationSuccessView());
-
-      } else {
-          Get.snackbar('Error', decoded['message'] ?? 'Something went wrong');
-        }
-      } catch (e) {
-        Get.snackbar('Error', 'Failed to register vendor: $e');
-        print("🔥 Error details: $e");
-      } finally {
-        isLoading(false);
-      }
+    if (selectedImage.value != null) {
+      print("🖼️ Selected Image Path: ${selectedImage.value!.path}");
+    } else {
+      print("⚠️ No image selected");
     }
+
+    final token = GetStorage().read('token');
+    print("🔐 Token: $token");
+
+    final uri = Uri.parse(postvendorLoginUrl);
+    final request = http.MultipartRequest('POST', uri);
+
+    request.headers['Authorization'] = 'Bearer $token';
+    request.headers['Accept'] = 'application/json';
+
+    // Add basic fields
+    request.fields['shop_name'] = shopNameController.text.trim();
+    request.fields['gst_no'] = gstController.text.trim();
+    request.fields['pan_no'] = panController.text.trim();
+    request.fields['tanno'] = tanController.text.trim();
+    request.fields['address'] = addressController.text.trim();
+    request.fields['categories'] = selectedCategoryId.value.toString();
+    request.fields['shop_time'] = shopTimingController.text.trim();
+    request.fields['rating'] = shopRatingController.text.trim();
+
+    // Add other category if needed
+    request.fields['other_category'] = selectedCategoryName.value == 'Other'
+        ? otherCategoryController.text.trim()
+        : '';
+
+    // Add image if selected
+    if (selectedImage.value != null) {
+      request.files.add(await http.MultipartFile.fromPath(
+        'shop_image',
+        selectedImage.value!.path,
+      ));
+    }
+
+    // Send request and handle response
+    final response = await request.send();
+    final respStr = await response.stream.bytesToString();
+    final decoded = json.decode(respStr);
+
+    if (response.statusCode == 201) {
+      Utils.showToast(decoded['message'] ?? 'Vendor registered successfully');
+      Get.to(() => VendorRegistrationSuccessView());
+    } else {
+      Utils.showErrorToast(decoded['message'] ?? 'Something went wrong');
+    }
+  } catch (e) {
+    Utils.showErrorToast('Failed to register vendor: $e');
+    print("🔥 Error details: $e");
+  } finally {
+    isLoading(false);
+  }
+}
   }

@@ -30,7 +30,7 @@ abstract class Routes {
   static const VENDOR_EARNING = _Paths.VENDOR_EARNING;
   static const VENDORWALLET = _Paths.VENDORWALLET;
   static const YOUR_PAGE_NAME = _Paths.YOUR_PAGE_NAME;
-static const VENDOR_CUSTOMERS = _Paths.VENDOR_CUSTOMERS;
+  static const VENDOR_CUSTOMERS = _Paths.VENDOR_CUSTOMERS;
   static const VENDORREVIEW = _Paths.VENDORREVIEW;
   static const VENDORRESUPPORT = _Paths.VENDORRESUPPORT;
   static const VENDORRESETTINGS = _Paths.VENDORRESETTINGS;
@@ -38,6 +38,9 @@ static const VENDOR_CUSTOMERS = _Paths.VENDOR_CUSTOMERS;
   static const ALL_ADDRESS_LIST = _Paths.ALL_ADDRESS_LIST;
   static const ADD_ADDRESS = _Paths.ADD_ADDRESS;
   static const VENDOR_REGISTRATION_SUCCESS = _Paths.VENDOR_REGISTRATION_SUCCESS;
+  static const VENDOR_ALL_SHOPS = _Paths.VENDOR_ALL_SHOPS;
+  static const SHOP_PRODUCTS_VIEW = _Paths.SHOP_PRODUCTS_VIEW;
+  static const SHOP_PRODUCTS = _Paths.SHOP_PRODUCTS;
 }
 
 abstract class _Paths {
@@ -77,4 +80,7 @@ abstract class _Paths {
   static const ALL_ADDRESS_LIST = '/all-address-list';
   static const ADD_ADDRESS = '/add-address';
   static const VENDOR_REGISTRATION_SUCCESS = '/vendor-registration-success';
+  static const VENDOR_ALL_SHOPS = '/vendor-all-shops';
+  static const SHOP_PRODUCTS_VIEW = '/shop-products-view';
+  static const SHOP_PRODUCTS = '/shop-products';
 }

@@ -13,6 +13,7 @@ class StoreController extends GetxController {
   var storeItem = StoreItem().obs;
   var storeAbout = StoreAboutData().obs;
   var storeItems = <Map<String, dynamic>>[].obs;
+  var store_id = "".obs;
 
   @override
   void onInit() {
@@ -25,6 +26,7 @@ class StoreController extends GetxController {
       RestApi restApi = RestApi();
       final response = await restApi.getWithAuthApi('${getStoreItemListUrl}$storeId');
       final responseJson = json.decode(response.body);
+      storeId = storeId;
 
       if (response.statusCode == 200 && responseJson["success"] == true) {
         storeItem.value = storeItemFromJson(response.body);
