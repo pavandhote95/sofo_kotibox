@@ -6,6 +6,7 @@ import '../../../custom_widgets/api_url.dart';
 import '../../../custom_widgets/snacbar.dart';
 import '../../../routes/app_pages.dart';
 import '../../../services/api_service.dart';
+import '../../login/controllers/login_controller.dart';
 
 class AccountController extends GetxController {
   var isLoading = false.obs;
@@ -58,42 +59,23 @@ class AccountController extends GetxController {
     }
   }
 
-  void postLogOut() async {
-    try {
-      isLoading(true);
-      RestApi restApi = RestApi();
-      final response = await restApi.postApiWithAuth(postLogout, "");
-      final responseJson = json.decode(response.body);
+Future<void> postLogOut() async {
+  try {
+    final storage = GetStorage();
+    storage.erase(); // ✅ clear all session
 
-      if ((response.statusCode == 200 || response.statusCode == 201) &&
-          responseJson["status"] == true) {
-        Utils.showToast(responseJson["message"] ?? "Logout successful");
+ // Logout ke baad
+Get.offAllNamed(Routes.LOGIN)?.then((_) {
+  Get.delete<LoginController>(force: true); // purana hata do
+  Get.put(LoginController()); // naya banao
+});
 
-        // ✅ clear session
-        storage.erase();
 
-        Get.offAllNamed(Routes.LOGIN);
-      } else {
-        isLoading(false);
-        if (responseJson["errors"] != null) {
-          String errorMessages = "";
-          responseJson["errors"].forEach((key, value) {
-            if (value is List) {
-              errorMessages += "${value.join("\n")}\n";
-            }
-          });
-          Utils.showErrorSnackbar("Validation Error", errorMessages.trim());
-        } else {
-          Get.offAllNamed(Routes.LOGIN);
-          Utils.showErrorSnackbar(
-              "Error", responseJson["message"] ?? "Logout failed! Try again.");
-        }
-      }
-    } catch (e) {
-      Utils.showErrorSnackbar(
-          "Exception", "Something went wrong. Please try again.");
-    } finally {
-      isLoading(false);
-    }
+    Utils.showToast("Logout successful");
+  } catch (e) {
+    debugPrint("Logout Error: $e");
   }
 }
+
+}
+  

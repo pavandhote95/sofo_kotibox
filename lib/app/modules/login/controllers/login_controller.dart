@@ -2,39 +2,33 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+
 import '../../../custom_widgets/api_url.dart';
 import '../../../custom_widgets/snacbar.dart';
 import '../../../routes/app_pages.dart';
 import '../../../services/api_service.dart';
 
 class LoginController extends GetxController {
+  // ✅ State variables
   var isLoading = false.obs;
-  final storage = GetStorage();
+  var rememberMe = false.obs;
 
-  // Controllers
+  // ✅ Controllers
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
-  // FocusNodes
+  // ✅ FocusNodes
   final emailFocusNode = FocusNode();
   final passwordFocusNode = FocusNode();
 
-  // Remember Me
-  final rememberMe = false.obs;
+  final storage = GetStorage();
 
-  @override
-  void onInit() {
-    super.onInit();
-    emailController.addListener(update);
-    passwordController.addListener(update);
-    emailFocusNode.addListener(update);
-    passwordFocusNode.addListener(update);
-  }
-
+  // ✅ Toggle Remember Me
   void toggleRememberMe(bool? value) {
     rememberMe.value = value ?? false;
   }
 
+  // ✅ Login API Function
   Future<void> postLoginApi() async {
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
@@ -50,7 +44,8 @@ class LoginController extends GetxController {
     String request = json.encode({"email": email, "password": password});
 
     try {
-      isLoading(true);
+      isLoading.value = true;
+
       RestApi restApi = RestApi();
       var response = await restApi.postApi(postLoginUrl, request);
       var responseJson = json.decode(response.body);
@@ -70,14 +65,23 @@ class LoginController extends GetxController {
         storage.write('userEmail', email);
 
         Utils.showToast(responseJson["message"] ?? "Login successful");
+
         Get.offAllNamed(Routes.DASHBOARD);
       } else {
         String errorMessage = "Login failed! Try again.";
 
         if (response.statusCode == 401 ||
-            (responseJson["message"]?.toString().toLowerCase().contains("invalid") ?? false)) {
+            (responseJson["message"]
+                    ?.toString()
+                    .toLowerCase()
+                    .contains("invalid") ??
+                false)) {
           errorMessage = "Email or password is incorrect.";
-        } else if (responseJson["message"]?.toString().toLowerCase().contains("token expire") ?? false) {
+        } else if (responseJson["message"]
+                ?.toString()
+                .toLowerCase()
+                .contains("token expire") ??
+            false) {
           storage.erase();
           Get.offAllNamed(Routes.LOGIN);
           return;
@@ -99,7 +103,7 @@ class LoginController extends GetxController {
       debugPrint("Login API Error: $e");
       Utils.showErrorToast("Something went wrong. Please try again.");
     } finally {
-      isLoading(false);
+      isLoading.value = false;
     }
   }
 

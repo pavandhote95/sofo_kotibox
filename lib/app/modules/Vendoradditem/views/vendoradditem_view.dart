@@ -1,4 +1,4 @@
-import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -119,64 +119,88 @@ class VendoradditemView extends StatelessWidget {
                         ),
                         const SizedBox(height: 16),
 
-                        /// SHOP DROPDOWN
-                        Obx(() {
-                          if (controller.isLoadingShops.value) {
-                            return const Center(
-                                child: CircularProgressIndicator());
-                          }
-
-                          if (controller.shops.isEmpty) {
-                            return Text(
-                              "No shops available",
-                              style: AppTextStyle.montserrat(
-                                c: Colors.red,
-                                fs: 14,
-                              ),
-                            );
-                          }
-
-                          return DropdownButtonFormField<String>(
-                            decoration: InputDecoration(
-                              labelStyle: AppTextStyle.montserrat(
-                                c: Colors.black,
-                                fs: 15,
-                              ),
-                              labelText: 'Select Shop',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(25),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                    color: Colors.grey, width: 1.2),
-                                borderRadius: BorderRadius.circular(25),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                    color: Colors.orange, width: 1.8),
-                                borderRadius: BorderRadius.circular(25),
-                              ),
-                            ),
-                            items: controller.shops.map((shop) {
-                              return DropdownMenuItem<String>(
-                                value: shop['id'].toString(),
-                                child: Text(
-                                  shop['shop_name'],
-                                  style: AppTextStyle.montserrat(
-                                    c: Colors.black,
-                                    fs: 15,
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                            value:
-                                controller.selectedShopId.value?.toString(),
-                            onChanged: (selectedId) {
-                              controller.selectedShopId.value =
-                                  int.tryParse(selectedId!);
-                            },
-                          );
-                        }),
+                 /// SHOP DROPDOWN
+Obx(() {
+  return DropdownButtonFormField<String>(
+    decoration: InputDecoration(
+      labelStyle: AppTextStyle.montserrat(
+        c: Colors.black,
+        fs: 15,
+      ),
+      labelText: 'Select Your Shop',
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(25),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderSide: const BorderSide(color: Colors.grey, width: 1.2),
+        borderRadius: BorderRadius.circular(25),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderSide: const BorderSide(color: Colors.orange, width: 1.8),
+        borderRadius: BorderRadius.circular(25),
+      ),
+    ),
+    value: controller.selectedShopId.value?.toString(),
+    items: controller.isLoadingShops.value
+        ? [
+            DropdownMenuItem<String>(
+              value: null,
+              enabled: false,
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.orange, // ✅ Orange loader
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    "Loading shops...",
+                    style: AppTextStyle.montserrat(
+                      c: Colors.grey,
+                      fs: 14,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          ]
+        : controller.shops.isEmpty
+            ? [
+                DropdownMenuItem<String>(
+                  value: null,
+                  enabled: false,
+                  child: Text(
+                    "No shops available",
+                    style: AppTextStyle.montserrat(
+                      c: Colors.red,
+                      fs: 14,
+                    ),
+                  ),
+                )
+              ]
+            : controller.shops.map((shop) {
+                return DropdownMenuItem<String>(
+                  value: shop['id'].toString(),
+                  child: Text(
+                    shop['shop_name'],
+                    style: AppTextStyle.montserrat(
+                      c: Colors.black,
+                      fs: 15,
+                    ),
+                  ),
+                );
+              }).toList(),
+    onChanged: (selectedId) {
+      if (selectedId != null) {
+        controller.selectedShopId.value = int.tryParse(selectedId);
+      }
+    },
+  );
+}),
 
                         const SizedBox(height: 30),
 
