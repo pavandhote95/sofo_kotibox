@@ -1,15 +1,18 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
-
-import '../custom_widgets/snacbar.dart';
-import '../routes/app_pages.dart';
 
 class RestApi {
   final storage = GetStorage();
 
+  /// 🔐 Save token to local storage
+  Future<void> saveToken(String token) async {
+    await storage.write("token", token);
+    print("✅ Token saved: $token");
+  }
+
+  /// 📦 Get token from storage
   Future<String?> getToken() async {
     return storage.read("token");
   }
@@ -27,19 +30,9 @@ class RestApi {
     return headers;
   }
 
-  /// 🔥 Handle unauthorized globally
-  void _handleUnauthorized() {
-    storage.erase();
-    Utils.showErrorSnackbar("Session Expired", "Please login again.");
-    Get.offAllNamed(Routes.LOGIN);
-  }
-
   /// Generic response handler
   http.Response _handleResponse(http.Response response) {
     print("🔹 API Response [${response.statusCode}]: ${response.body}");
-    if (response.statusCode == 401) {
-      _handleUnauthorized();
-    }
     return response;
   }
 

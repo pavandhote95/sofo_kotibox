@@ -25,8 +25,16 @@ class SplashController extends GetxController {
       // ✅ Token / login state available
       Get.offAllNamed(Routes.DASHBOARD);
     } else {
+
       // ✅ Not logged in
       Get.offAllNamed(Routes.LOGIN);
+
+      if (isLoggedIn) {
+      Get.offAllNamed(Routes.ONBOARDING);
+      } else {
+      Get.offAllNamed(Routes.ONBOARDING);
+      }
+
     }
   }
 }
