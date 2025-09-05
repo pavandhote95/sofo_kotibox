@@ -1,29 +1,23 @@
-import 'dart:convert';
 import 'dart:io';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:http/http.dart' as http;
-
-import '../../../custom_widgets/api_url.dart';
-import '../../../custom_widgets/auth_helper.dart';
-import '../../../custom_widgets/snacbar.dart';
-import '../../../services/ApiHelper.dart';
-import '../../../services/api_service.dart';
-import '../../Dashboard/views/dashboard_view.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:sofo/app/custom_widgets/snacbar.dart';
+import 'package:sofo/app/routes/app_pages.dart';
+import 'package:sofo/app/services/api_service.dart';
 
 class VendoradditemController extends GetxController {
-  // Controllers
+  /// Text controllers
   final itemNameController = TextEditingController();
   final itemDescController = TextEditingController();
   final itemPriceController = TextEditingController();
   final itemQtyController = TextEditingController();
   final brandController = TextEditingController();
   final sizeController = TextEditingController();
-  var storage = GetStorage();
 
-  // Focus nodes
+  /// Focus nodes
   final itemNameFocus = FocusNode();
   final itemDescFocus = FocusNode();
   final itemPriceFocus = FocusNode();
@@ -31,136 +25,173 @@ class VendoradditemController extends GetxController {
   final brandFocus = FocusNode();
   final sizeFocus = FocusNode();
 
-  var selectedCategoryId = RxnInt(); // Rx integer for selected shop ID
-  RxBool isLoading = false.obs;
-  RxBool isLoading1 = false.obs;
-  Rx<File?> selectedImage = Rx<File?>(null);
-  RxList<Map<String, dynamic>> shop = <Map<String, dynamic>>[].obs;
-
-  @override
-  void onInit() {
-    super.onInit();
-    getCategoryName();
-  }
-
-  Future<void> getCategoryName() async {
-    try {
-      isLoading1(true);
-      RestApi restApi = RestApi();
-      var response = await restApi.getApi(getallstoreUrl);
-      var responseJson = json.decode(response.body);
-
-      if (response.statusCode == 200 && responseJson['success'] == true) {
-        shop.value = List<Map<String, dynamic>>.from(responseJson['data']);
-      } else if (response.statusCode == 401) {
-        AuthHelper.handleUnauthorized();
-      } else {
-        Utils.showErrorSnackbar("Error", responseJson["message"] ?? "Something went wrong!");
-      }
-    } catch (e) {
-      print('Shop Fetch Error: $e');
-      Utils.showErrorSnackbar("Exception", "Failed to load shops");
-    } finally {
-      isLoading1(false);
-    }
-  }
+  /// Image Picker
+  var selectedImage = Rxn<File>();
 
   Future<void> pickImage() async {
     final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
+    final pickedFile =
+        await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
     if (pickedFile != null) {
       selectedImage.value = File(pickedFile.path);
     }
   }
 
-  // Validate all fields and return true if valid, false otherwise
+  /// Shops Dropdown (Dynamic)
+  var shops = <Map<String, dynamic>>[].obs;
+  var isLoadingShops = false.obs;
+  var selectedShopId = Rxn<int>();
+
+  /// Add Item Loading
+  var isLoading = false.obs;
+
+  final RestApi _api = RestApi();
+  final storage = GetStorage();
+
+  @override
+  void onInit() {
+    super.onInit();
+    fetchShops();
+  }
+
+  /// Fetch shops dynamically for logged-in user
+Future<void> fetchShops() async {
+  try {
+    isLoadingShops.value = true;
+
+    // ✅ userId correct key se lo
+    final userId = storage.read("userId");
+    print("👤 UserId from storage: $userId");
+
+    if (userId == null) {
+      Get.snackbar("Error", "User not logged in");
+      return;
+    }
+
+    final url =
+        "https://kotiboxglobaltech.com/sofo_app/api/storelistbyuser/$userId";
+
+    print("🌍 Fetching shops from: $url");
+
+    final response = await _api.getWithAuthApi(url);
+    final data = jsonDecode(response.body);
+
+    if (response.statusCode == 200 && data["success"] == true) {
+      shops.assignAll(List<Map<String, dynamic>>.from(data["data"]));
+
+      if (shops.isEmpty) {
+        shops.assignAll([
+          {"id": -1, "shop_name": "No shops available"}
+        ]);
+      }
+    } else {
+      Get.snackbar("Error", data["message"] ?? "Failed to fetch shops");
+    }
+  } catch (e) {
+    Get.snackbar("Error", "Something went wrong: $e");
+  } finally {
+    isLoadingShops.value = false;
+  }
+}
+
+  /// Validate input fields
   bool validateFields() {
-    if (itemNameController.text.isEmpty) {
-      Get.snackbar('Error', 'Item Name is required');
+    if (selectedImage.value == null) {
+      Get.snackbar("Error", "Please upload an image");
       return false;
     }
-    if (itemDescController.text.isEmpty) {
-      Get.snackbar('Error', 'Item Description is required');
+    if (itemNameController.text.isEmpty ||
+        itemDescController.text.isEmpty ||
+        itemPriceController.text.isEmpty ||
+        itemQtyController.text.isEmpty ||
+        brandController.text.isEmpty ||
+        sizeController.text.isEmpty) {
+      Get.snackbar("Error", "Please fill all fields");
       return false;
     }
-    if (itemPriceController.text.isEmpty) {
-      Get.snackbar('Error', 'Item Price is required');
+    if (selectedShopId.value == null || selectedShopId.value == -1) {
+      Get.snackbar("Error", "Please select a shop");
       return false;
     }
-    if (itemQtyController.text.isEmpty) {
-      Get.snackbar('Error', 'Item Quantity is required');
-      return false;
-    }
-    if (brandController.text.isEmpty) {
-      Get.snackbar('Error', 'Brand is required');
-      return false;
-    }
-    if (sizeController.text.isEmpty) {
-      Get.snackbar('Error', 'Size is required');
-      return false;
-    }
-
-
     return true;
   }
-  void addItem() async {
-    isLoading(true);
-   var id =  storage.read('userid');
-        print("${additemUrl}${storage.read('userid')}");
-    final result = await ApiHelper.postMultipart(
-      url: additemUrl,
 
-      fields: {
-        // 'store_id': selectedCategoryId.value.toString(),
-        'name': itemNameController.text.trim(),
-        'price': itemPriceController.text.trim(),
-        'about': itemDescController.text.trim(),
-        'brand': brandController.text.trim(),
-        'size': sizeController.text.trim(),
-        'status': "1",
-      },
-      imageFile: selectedImage.value,
-      imageKey: 'image',
+  /// Submit Add Item
+Future<void> addItem() async {
+  isLoading.value = true;
+
+  try {
+    final url = "https://kotiboxglobaltech.com/sofo_app/api/add-items";
+    final fields = {
+      "store_id": selectedShopId.value.toString(), // ✅ correct key
+      "name": itemNameController.text,
+      "about": itemDescController.text,            // ✅ changed from description -> about
+      "price": itemPriceController.text,
+      "quantity": itemQtyController.text,
+      "brand": brandController.text,
+      "size": sizeController.text,
+      "status": "1",                               // ✅ static value from your payload
+    };
+
+    // 🔹 Print request details in terminal
+    print("======== ADD ITEM REQUEST ========");
+    print("API URL: $url");
+    print("Fields: $fields");
+    print("Selected Image: ${selectedImage.value?.path}");
+    print("==================================");
+
+    final response = await _api.postMultipartApiWithAuth(
+      url,
+      fields,
+      fileKey: "image",
+      file: selectedImage.value,
     );
 
-    isLoading(false);
+    // 🔹 Print response details
+    print("======== ADD ITEM RESPONSE ========");
+    print("Status Code: ${response.statusCode}");
+    print("Body: ${response.body}");
+    print("==================================");
 
-    if (result['success']) {
-      Get.snackbar('Success', result['message']);
-
-      itemNameController.clear();
-      itemDescController.clear();
-      itemPriceController.clear();
-      itemQtyController.clear();
-      brandController.clear();
-      sizeController.clear();
-      selectedCategoryId.value = null;
-      selectedImage.value = null;
-
-      Get.to(() => DashboardView());
-
+    final resData = jsonDecode(response.body);
+    if (response.statusCode == 200 && resData["success"] == true) {
+      Utils.showToast( "Item added successfully");
+      clearForm();
+      Get.toNamed(Routes.DASHBOARD);
     } else {
-      Get.snackbar('Error', result['message']);
+      Get.snackbar("Error", resData["message"] ?? "Failed to add item");
     }
+  } catch (e) {
+    print("======== ADD ITEM ERROR ========");
+    print("Error: $e");
+    print("================================");
+    Utils.showErrorToast( "Something went wrong: $e");
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+
+  /// Clear form after success
+  void clearForm() {
+    itemNameController.clear();
+    itemDescController.clear();
+    itemPriceController.clear();
+    itemQtyController.clear();
+    brandController.clear();
+    sizeController.clear();
+    selectedImage.value = null;
+    selectedShopId.value = null;
   }
 
   @override
   void onClose() {
-    // Dispose controllers
     itemNameController.dispose();
     itemDescController.dispose();
     itemPriceController.dispose();
     itemQtyController.dispose();
     brandController.dispose();
     sizeController.dispose();
-    // Dispose focus nodes
-    itemNameFocus.dispose();
-    itemDescFocus.dispose();
-    itemPriceFocus.dispose();
-    itemQtyFocus.dispose();
-    brandFocus.dispose();
-    sizeFocus.dispose();
     super.onClose();
   }
 }

@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+
 import '../modules/Dashboard/bindings/dashboard_binding.dart';
 import '../modules/Dashboard/views/dashboard_view.dart';
 import '../modules/Earnings/bindings/earnings_binding.dart';
@@ -53,6 +54,8 @@ import '../modules/venderlogin/bindings/venderlogin_binding.dart';
 import '../modules/venderlogin/views/venderRegister_view.dart';
 import '../modules/vendor_customers/bindings/vendor_customers_binding.dart';
 import '../modules/vendor_customers/views/vendor_customers_view.dart';
+import '../modules/vendor_registration_success/bindings/vendor_registration_success_binding.dart';
+import '../modules/vendor_registration_success/views/vendor_registration_success_view.dart';
 import '../modules/vendorwallet/bindings/vendorwallet_binding.dart';
 import '../modules/vendorwallet/views/vendorwallet_view.dart';
 import '../modules/wishlist/bindings/wishlist_binding.dart';
@@ -220,7 +223,6 @@ class AppPages {
       name: _Paths.EDIT_ADDRESS,
       page: () => EditAddressView(
         initialData: Get.arguments ?? {},
-     
       ),
       binding: EditAddressBinding(),
     ),
@@ -231,8 +233,13 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.ADD_ADDRESS,
-      page: () =>  AddAddressView(),
+      page: () => AddAddressView(),
       binding: AddAddressBinding(),
+    ),
+    GetPage(
+      name: _Paths.VENDOR_REGISTRATION_SUCCESS,
+      page: () => const VendorRegistrationSuccessView(),
+      binding: VendorRegistrationSuccessBinding(),
     ),
   ];
 }
