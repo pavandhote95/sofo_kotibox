@@ -1,8 +1,6 @@
   import 'package:flutter/material.dart';
   import 'package:font_awesome_flutter/font_awesome_flutter.dart';
   import 'package:get/get.dart';
-import 'package:sofo/app/modules/VendorProductList/views/vendor_product_list_view.dart';
-import 'package:sofo/app/modules/VendorShop/views/vendor_shop_view.dart';
 import 'package:sofo/app/modules/Vendoradditem/views/vendoradditem_view.dart';
 import 'package:sofo/app/modules/Vendorpendingorders/views/vendorpendingorders_view.dart';
 import 'package:sofo/app/modules/Vendorresupport/views/vendorresupport_view.dart';
@@ -12,12 +10,10 @@ import 'package:sofo/app/modules/vendor_all_shops/views/vendor_all_shops_view.da
 import 'package:sofo/app/modules/vendor_customers/views/vendor_customers_view.dart';
 import 'package:sofo/app/modules/vendorearning/views/vendor_earning_view.dart';
 import 'package:sofo/app/modules/vendorwallet/views/vendorwallet_view.dart';
-
   import '../../../custom_widgets/CustomAppBar.dart';
   import '../../../custom_widgets/app_color.dart';
   import '../../../custom_widgets/curved_top_container.dart';
   import '../../../custom_widgets/text_fonts.dart';
-import '../../VendorCategories/views/vendor_categories_view.dart';
 import '../../Vendorallorders/views/vendorallorders_view.dart';
 
   class VendorDashboardView extends StatelessWidget {
@@ -76,18 +72,12 @@ import '../../Vendorallorders/views/vendorallorders_view.dart';
                           Get.to(() => VendoradditemView());
 
                         }),
-                        _dashboardCard('Products', FontAwesomeIcons.boxesStacked,() {
-                          Get.to(() => VendorProductListView());
-
-                        }),
+        
                         _dashboardCard('All_Shops', FontAwesomeIcons.store,() {
                           Get.to(() => VendorAllShopsView());
 
                         }),
-                        _dashboardCard('Categories', FontAwesomeIcons.tableList,() {
-                          Get.to(() => VendorCategoriesView());
-
-                        }),
+                
                         _dashboardCard('Earnings', FontAwesomeIcons.dollarSign,() {
                           Get.to(() => VendorEarningView());
 

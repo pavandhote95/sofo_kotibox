@@ -27,6 +27,7 @@ class ShopProductsView extends StatelessWidget {
         title: Text(shopName),
         backgroundColor: AppColor.orange,
         foregroundColor: Colors.white,
+        centerTitle: true,
       ),
       body: Obx(() {
         if (controller.isLoading.value) {

@@ -1,10 +1,8 @@
 import 'dart:convert';
-
 import 'package:get/get.dart';
 import 'package:sofo/app/services/api_service.dart';
 
 class ShopProductsController extends GetxController {
-  //TODO: Implement ShopProductsController
   final int storeId;
   final String shopName;
 
@@ -20,38 +18,32 @@ class ShopProductsController extends GetxController {
     super.onInit();
     fetchProducts();
   }
-Future<void> fetchProducts() async {
-  try {
-    isLoading(true);
-    final url =
-        "https://kotiboxglobaltech.com/sofo_app/api/store/store-item/10";
 
-    print("📡 API URL CALLED: $url");   // URL log
+  Future<void> fetchProducts() async {
+    try {
+      isLoading(true);
 
-    final response = await _api.getApi(url);
+      final url =
+          "https://kotiboxglobaltech.com/sofo_app/api/store/store-item/$storeId";
+      print("📡 API URL CALLED: $url");
 
-    print("📥 RAW RESPONSE: ${response.body}");   // पूरा raw response log
+      final response = await _api.getApi(url);
+      var data = json.decode(response.body);
 
-    var data = json.decode(response.body);
+      print("📦 DECODED RESPONSE: $data");
 
-    print("📦 DECODED RESPONSE: $data");  // decoded map log
-
-    if (data["data"] != null) {
-      productList.value = data["data"];
-
-      print("✅ TOTAL PRODUCTS: ${productList.length}");
-      for (var product in productList) {
-        print("➡️ PRODUCT ITEM: $product");
+      if (data["data"] != null) {
+        productList.value = data["data"];
+        print("✅ TOTAL PRODUCTS: ${productList.length}");
+      } else {
+        productList.clear();
+        print("⚠️ NO PRODUCTS FOUND in API response");
       }
-    } else {
+    } catch (e) {
       productList.clear();
-      print("⚠️ NO PRODUCTS FOUND in API response");
+      print("❌ ERROR fetching products: $e");
+    } finally {
+      isLoading(false);
     }
-  } catch (e) {
-    productList.clear();
-    print("❌ ERROR fetching products: $e");
-  } finally {
-    isLoading(false);
   }
-}
 }
