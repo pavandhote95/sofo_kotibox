@@ -27,7 +27,7 @@ class StoreView extends GetView<StoreController> {
       backgroundColor: AppColor.backgroundColor,
       body: Column(
         children: [
-          // AppBar-like
+          // Custom AppBar
           Container(
             margin: EdgeInsets.only(top: 40),
             padding: EdgeInsets.symmetric(horizontal: 16),
@@ -54,12 +54,12 @@ class StoreView extends GetView<StoreController> {
             ),
           ),
 
-          // Main Scrollable Area
+          // Scrollable Content
           Expanded(
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  /// Top Background and Info Section
+                  /// Store Info Section
                   Obx(() {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -165,175 +165,186 @@ class StoreView extends GetView<StoreController> {
                     );
                   }),
 
-                  /// Placeholder section (optional)
+                  /// Popular Items Header
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: Column(
+                    child: Row(
                       children: [
-                        Row(
-                
-                          children: [
-                            Text(
-                              'Popular Items',
-                              style: AppTextStyle.montserrat(fs: 22, fw: FontWeight.bold),
-                            ),
-                          ],
+                        Text(
+                          'Popular Items',
+                          style: AppTextStyle.montserrat(fs: 22, fw: FontWeight.bold),
                         ),
-                
-                      
                       ],
                     ),
                   ),
 
-                  /// Popular Items Grid
+                  /// 🔍 Search Box
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    child: TextField(
+                      onChanged: (value) => controller.searchItems(value),
+                      decoration: InputDecoration(
+                        hintText: "Search products...",
+                        prefixIcon: Icon(Icons.search, color: AppColor.greyText),
+                        filled: true,
+                        fillColor: AppColor.white,
+                        contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30),
+                          borderSide: BorderSide(color: AppColor.greyFieldBorder),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30),
+                          borderSide: BorderSide(color: AppColor.greyFieldBorder),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30),
+                          borderSide: BorderSide(color: AppColor.orange),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  /// Items Grid
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: Column(
-                      children: [
-                      
-                  
-                        Obx(() {
-                          var items = controller.storeItems;
+                    child: Obx(() {
+                      var items = controller.filteredItems;
 
-                          if (items.isEmpty) {
-                            return Center(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 32),
-                                child: Text(
-                                  "No Items Available",
-                                  style: AppTextStyle.montserrat(
-                                    fs: 14,
-                                    fw: FontWeight.w500,
-                                    c: AppColor.greyText,
+                      if (items.isEmpty) {
+                        return Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 32),
+                            child: Text(
+                              "No Items Found",
+                              style: AppTextStyle.montserrat(
+                                fs: 14,
+                                fw: FontWeight.w500,
+                                c: AppColor.greyText,
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+
+                      return GridView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: items.length,
+                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                          maxCrossAxisExtent: 189,
+                          mainAxisSpacing: 12,
+                          crossAxisSpacing: 12,
+                          childAspectRatio: 1.1,
+                        ),
+                        itemBuilder: (context, index) {
+                          var item = items[index];
+                          return Container(
+                            padding: EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: AppColor.white,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black12,
+                                  blurRadius: 6,
+                                  offset: Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Product Image
+                                Expanded(
+                                  child: InkWell(
+                                    onTap: () {
+                                      Get.to(() => ProductDetailsView(item: item));
+                                    },
+                                    child: Container(
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(12),
+                                        color: AppColor.grey,
+                                      ),
+                                      child: CachedNetworkImage(
+                                        imageUrl: item['image'] ?? '',
+                                        fit: BoxFit.cover,
+                                        placeholder: (context, url) => Center(child: CustomLoadingIndicator()),
+                                        errorWidget: (context, url, error) => Center(
+                                          child: Text(
+                                            'No Image',
+                                            style: AppTextStyle.montserrat(
+                                              fs: 12,
+                                              c: AppColor.greyText,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            );
-                          }
 
-                          return     GridView.builder(
-      shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-      itemCount: items.length,
-      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 189,
-        mainAxisSpacing: 12,
-        crossAxisSpacing: 12,
-        childAspectRatio: 1.1,
-      ),
-      itemBuilder: (context, index) {
-        var item = items[index];
-        return Container(
-          padding: EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: AppColor.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black12,
-                blurRadius: 6,
-                offset: Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Product Image
-              Expanded(
-                child: InkWell(
-                  onTap: () {
-                    Get.to(() => ProductDetailsView(item: item));
-                  },
-                  child: Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      color: AppColor.grey,
-                    ),
-                    child: CachedNetworkImage(
-                      imageUrl: item['image'] ?? '',
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) =>
-                          Center(child: CustomLoadingIndicator()),
-                      errorWidget: (context, url, error) => Center(
-                        child: Text(
-                          'No Image',
-                          style: AppTextStyle.montserrat(
-                            fs: 12,
-                            c: AppColor.greyText,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+                                SizedBox(height: 8),
 
-              SizedBox(height: 8),
+                                // Item Name & Price
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        item['name'] ?? 'Item Name',
+                                        style: AppTextStyle.montserrat(
+                                          fs: 13,
+                                          fw: FontWeight.w500,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    SizedBox(width: 4),
+                                    Text(
+                                      "₹${item['price'] ?? '0'}",
+                                      style: AppTextStyle.montserrat(
+                                        fs: 13,
+                                        fw: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
 
-              // Item Name & Price
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      item['name'] ?? 'Item Name',
-                      style: AppTextStyle.montserrat(
-                        fs: 13,
-                        fw: FontWeight.w500,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  SizedBox(width: 4),
-                  Text(
-                    "₹${item['price'] ?? '0'}",
-                    style: AppTextStyle.montserrat(
-                      fs: 13,
-                      fw: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
+                                SizedBox(height: 6),
 
-              SizedBox(height: 6),
-
-              // Buy Now Button
-              GestureDetector(
-                onTap: () {
-                  Get.to(() => ProductDetailsView(item: item));
-                  // Buy Now action
-                },
-                child: Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.symmetric(vertical: 6),
-                  decoration: BoxDecoration(
-                    color: AppColor.orange,
-                    borderRadius: BorderRadius.circular(30),
+                                // Buy Now Button
+                                GestureDetector(
+                                  onTap: () {
+                                    Get.to(() => ProductDetailsView(item: item));
+                                  },
+                                  child: Container(
+                                    width: double.infinity,
+                                    padding: EdgeInsets.symmetric(vertical: 6),
+                                    decoration: BoxDecoration(
+                                      color: AppColor.orange,
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        'Buy now',
+                                        style: AppTextStyle.montserrat(
+                                          fs: 12,
+                                          c: AppColor.white,
+                                          fw: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    }),
                   ),
-                  child: Center(
-                    child: Text(
-                      'Buy now',
-                      style: AppTextStyle.montserrat(
-                        fs: 12,
-                        c: AppColor.white,
-                        fw: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-                        }),
-                        SizedBox(height: 10),
-                      ],
-                    ),
-                  )
                 ],
               ),
             ),
