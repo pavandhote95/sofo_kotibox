@@ -9,9 +9,8 @@ import '../../../custom_widgets/text_fonts.dart';
 import '../../../data/store_list.dart';
 import '../controllers/store_controller.dart';
 
-// ignore: must_be_immutable
 class StoreView extends GetView<StoreController> {
-  late StorelistData storeListData;
+  final StorelistData storeListData;
 
   StoreView({required this.storeListData});
 
@@ -25,36 +24,15 @@ class StoreView extends GetView<StoreController> {
 
     return Scaffold(
       backgroundColor: AppColor.backgroundColor,
+      appBar: AppBar(
+        title: Text(
+          'Store Details',
+          style: AppTextStyle.montserrat(fs: 18, fw: FontWeight.bold, c: Colors.black),
+        ),
+        centerTitle: true,
+      ),
       body: Column(
         children: [
-          // Custom AppBar
-          Container(
-            margin: EdgeInsets.only(top: 40),
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.arrow_back_ios, size: 20),
-                  onPressed: () => Get.back(),
-                ),
-                Text(
-                  'Store Details',
-                  style: AppTextStyle.montserrat(
-                    fs: 18,
-                    fw: FontWeight.bold,
-                    c: Colors.black,
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.favorite_border, color: Colors.black),
-                  onPressed: () {},
-                )
-              ],
-            ),
-          ),
-
-          // Scrollable Content
           Expanded(
             child: SingleChildScrollView(
               child: Column(
@@ -119,8 +97,8 @@ class StoreView extends GetView<StoreController> {
                                   GestureDetector(
                                     onTap: () {
                                       Get.to(() => StoreInformationView(
-                                            storeDetails: controller.storeItem.value.storeDetails,
-                                          ));
+                                        storeDetails: controller.storeItem.value.storeDetails,
+                                      ));
                                     },
                                     child: Container(
                                       padding: EdgeInsets.symmetric(horizontal: 15, vertical: 6),
@@ -128,22 +106,14 @@ class StoreView extends GetView<StoreController> {
                                         color: AppColor.white,
                                         borderRadius: BorderRadius.circular(30),
                                         boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.black12,
-                                            blurRadius: 4,
-                                            offset: Offset(0, 2),
-                                          )
+                                          BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
                                         ],
                                       ),
                                       child: Row(
                                         children: [
                                           Text(
                                             'Store Info',
-                                            style: AppTextStyle.montserrat(
-                                              fs: 13,
-                                              c: Colors.black,
-                                              fw: FontWeight.w600,
-                                            ),
+                                            style: AppTextStyle.montserrat(fs: 13, c: Colors.black, fw: FontWeight.w600),
                                           ),
                                           SizedBox(width: 2),
                                           Icon(Icons.arrow_forward, size: 19),
@@ -153,11 +123,7 @@ class StoreView extends GetView<StoreController> {
                                   ),
                                 ],
                               ),
-                              Divider(
-                                color: AppColor.greyFieldBorder,
-                                thickness: 1,
-                                height: 24,
-                              )
+                              Divider(color: AppColor.greyFieldBorder, thickness: 1, height: 24)
                             ],
                           ),
                         ),
@@ -170,15 +136,12 @@ class StoreView extends GetView<StoreController> {
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: Row(
                       children: [
-                        Text(
-                          'Popular Items',
-                          style: AppTextStyle.montserrat(fs: 22, fw: FontWeight.bold),
-                        ),
+                        Text('Popular Items', style: AppTextStyle.montserrat(fs: 22, fw: FontWeight.bold)),
                       ],
                     ),
                   ),
 
-                  /// 🔍 Search Box
+                  /// Search Box
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                     child: TextField(
@@ -217,11 +180,7 @@ class StoreView extends GetView<StoreController> {
                             padding: const EdgeInsets.symmetric(vertical: 32),
                             child: Text(
                               "No Items Found",
-                              style: AppTextStyle.montserrat(
-                                fs: 14,
-                                fw: FontWeight.w500,
-                                c: AppColor.greyText,
-                              ),
+                              style: AppTextStyle.montserrat(fs: 14, fw: FontWeight.w500, c: AppColor.greyText),
                             ),
                           ),
                         );
@@ -239,75 +198,98 @@ class StoreView extends GetView<StoreController> {
                         ),
                         itemBuilder: (context, index) {
                           var item = items[index];
+
                           return Container(
                             padding: EdgeInsets.all(8),
                             decoration: BoxDecoration(
                               color: AppColor.white,
                               borderRadius: BorderRadius.circular(12),
                               boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black12,
-                                  blurRadius: 6,
-                                  offset: Offset(0, 2),
-                                ),
+                                BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2)),
                               ],
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                // Product Image
+                                /// Product Image with Favorite
                                 Expanded(
-                                  child: InkWell(
-                                    onTap: () {
-                                      Get.to(() => ProductDetailsView(item: item));
-                                    },
-                                    child: Container(
-                                      width: double.infinity,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(12),
-                                        color: AppColor.grey,
-                                      ),
-                                      child: CachedNetworkImage(
-                                        imageUrl: item['image'] ?? '',
-                                        fit: BoxFit.cover,
-                                        placeholder: (context, url) => Center(child: CustomLoadingIndicator()),
-                                        errorWidget: (context, url, error) => Center(
-                                          child: Text(
-                                            'No Image',
-                                            style: AppTextStyle.montserrat(
-                                              fs: 12,
-                                              c: AppColor.greyText,
+                                  child: Stack(
+                                    children: [
+                                      InkWell(
+                                        onTap: () {
+                                          controller.storage.write('last_product_id', item['id']);
+                                          Get.to(() => ProductDetailsView(item: item));
+                                        },
+                                        child: Container(
+                                          width: double.infinity,
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(12),
+                                            color: AppColor.grey,
+                                          ),
+                                          child: ClipRRect(
+                                            borderRadius: BorderRadius.circular(12),
+                                            child: CachedNetworkImage(
+                                              imageUrl: item['image'] ?? '',
+                                              fit: BoxFit.cover,
+                                              placeholder: (context, url) => Center(child: CustomLoadingIndicator()),
+                                              errorWidget: (context, url, error) => Center(
+                                                child: Text(
+                                                  'No Image',
+                                                  style: AppTextStyle.montserrat(fs: 12, c: AppColor.greyText),
+                                                ),
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
-                                    ),
+                                      Positioned(
+                                        top: 6,
+                                        right: 6,
+                                        child: Obx(() {
+                                          bool isFav = controller.wishlistStatus[item['id']] ?? false;
+                                          return GestureDetector(
+                                            onTap: () {
+                                              controller.toggleWishlist(item['id']);
+                                            },
+                                            child: Container(
+                                              padding: EdgeInsets.all(6),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white.withOpacity(0.9),
+                                                shape: BoxShape.circle,
+                                                boxShadow: [
+                                                  BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
+                                                ],
+                                              ),
+                                              child: Icon(
+                                                isFav ? Icons.favorite : Icons.favorite_border,
+                                                color: isFav ? AppColor.orange : AppColor.greyText,
+                                                size: 18,
+                                              ),
+                                            ),
+                                          );
+                                        }),
+                                      ),
+                                    ],
                                   ),
                                 ),
 
                                 SizedBox(height: 8),
 
-                                // Item Name & Price
+                                // Name & Price
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Expanded(
                                       child: Text(
                                         item['name'] ?? 'Item Name',
-                                        style: AppTextStyle.montserrat(
-                                          fs: 13,
-                                          fw: FontWeight.w500,
-                                        ),
+                                        style: AppTextStyle.montserrat(fs: 13, fw: FontWeight.w500),
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
                                     SizedBox(width: 4),
                                     Text(
                                       "₹${item['price'] ?? '0'}",
-                                      style: AppTextStyle.montserrat(
-                                        fs: 13,
-                                        fw: FontWeight.bold,
-                                      ),
+                                      style: AppTextStyle.montserrat(fs: 13, fw: FontWeight.bold),
                                     ),
                                   ],
                                 ),
@@ -317,6 +299,7 @@ class StoreView extends GetView<StoreController> {
                                 // Buy Now Button
                                 GestureDetector(
                                   onTap: () {
+                                    controller.storage.write('last_product_id', item['id']);
                                     Get.to(() => ProductDetailsView(item: item));
                                   },
                                   child: Container(
@@ -329,11 +312,7 @@ class StoreView extends GetView<StoreController> {
                                     child: Center(
                                       child: Text(
                                         'Buy now',
-                                        style: AppTextStyle.montserrat(
-                                          fs: 12,
-                                          c: AppColor.white,
-                                          fw: FontWeight.bold,
-                                        ),
+                                        style: AppTextStyle.montserrat(fs: 12, c: AppColor.white, fw: FontWeight.bold),
                                       ),
                                     ),
                                   ),

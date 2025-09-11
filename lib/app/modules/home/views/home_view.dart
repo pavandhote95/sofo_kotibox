@@ -6,6 +6,8 @@
   import 'package:sofo/app/custom_widgets/curved_top_container.dart';
   import 'package:sofo/app/modules/account/controllers/account_controller.dart';
   import 'package:sofo/app/modules/home/views/store_view.dart';
+import 'package:sofo/app/modules/whishlist/views/whishlist_view.dart';
+
   import '../../../custom_widgets/app_color.dart';
   import '../../../custom_widgets/loder.dart';
   import '../../../custom_widgets/text_fonts.dart';
@@ -21,6 +23,7 @@
 
     // ✅ Use existing AccountController
     final AccountController accountController = Get.put(AccountController());
+
 
     @override
     Widget build(BuildContext context) {
@@ -107,49 +110,79 @@
 
                                   ],
                                 ),
-                                Row(
-                                  children: [
-                                    GestureDetector(
-                                      onTap: () {
-                                        Get.to(SearchingView());
-                                      },
-                                      child: Container(
-                                        padding: const EdgeInsets.all(10),
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                            color: Colors.grey.shade300,
-                                          ),
-                                          shape: BoxShape.circle,
-                                          color: Colors.white,
-                                        ),
-                                        child: const Icon(
-                                          CupertinoIcons.search,
-                                          size: 20,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    GestureDetector(
-                                      onTap: () {
-                                        Get.to(NotificationView());
-                                      },
-                                      child: Container(
-                                        padding: const EdgeInsets.all(10),
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                            color: Colors.grey.shade300,
-                                          ),
-                                          shape: BoxShape.circle,
-                                          color: Colors.white,
-                                        ),
-                                        child: const Icon(
-                                          CupertinoIcons.bell,
-                                          size: 20,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                              Row(
+  children: [
+    // 🔍 Search
+    GestureDetector(
+      onTap: () {
+        Get.to(() => SearchingView());
+      },
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: Colors.grey.shade300,
+          ),
+          shape: BoxShape.circle,
+          color: Colors.white,
+        ),
+        child: const Icon(
+          CupertinoIcons.search,
+          size: 20,
+        ),
+      ),
+    ),
+
+    const SizedBox(width: 12),
+
+    // 🔔 Notification
+    GestureDetector(
+      onTap: () {
+        Get.to(() => NotificationView());
+      },
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: Colors.grey.shade300,
+          ),
+          shape: BoxShape.circle,
+          color: Colors.white,
+        ),
+        child: const Icon(
+          CupertinoIcons.bell,
+          size: 20,
+        ),
+      ),
+    ),
+
+    const SizedBox(width: 12),
+
+    // ❤️ Wishlist
+   GestureDetector(
+  onTap: () {
+    Get.to(() => WishlistView());
+  },
+  child: Container(
+    padding: const EdgeInsets.all(10),
+    decoration: BoxDecoration(
+      border: Border.all(
+        color: Colors.grey.shade300,
+      ),
+      shape: BoxShape.circle,
+      color: Colors.white,
+    ),
+    child: const Icon(
+      CupertinoIcons.heart,
+      size: 20,
+    ),
+  ),
+),
+
+  ],
+)
+
+                             
                               ],
                             ),
 
