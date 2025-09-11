@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-
 import '../modules/Dashboard/bindings/dashboard_binding.dart';
 import '../modules/Dashboard/views/dashboard_view.dart';
 import '../modules/Earnings/bindings/earnings_binding.dart';
@@ -62,8 +61,9 @@ import '../modules/vendor_registration_success/bindings/vendor_registration_succ
 import '../modules/vendor_registration_success/views/vendor_registration_success_view.dart';
 import '../modules/vendorwallet/bindings/vendorwallet_binding.dart';
 import '../modules/vendorwallet/views/vendorwallet_view.dart';
-import '../modules/wishlist/bindings/wishlist_binding.dart';
-import '../modules/wishlist/views/wishlist_view.dart';
+import '../modules/whishlist/bindings/whishlist_binding.dart';
+import '../modules/whishlist/views/whishlist_view.dart';
+
 import '../modules/your_page_name/bindings/your_page_name_binding.dart';
 import '../modules/your_page_name/views/your_page_name_view.dart';
 
@@ -133,11 +133,7 @@ class AppPages {
       page: () => SearchingView(),
       binding: SearchingBinding(),
     ),
-    GetPage(
-      name: _Paths.WISHLIST,
-      page: () => WishlistView(),
-      binding: WishlistBinding(),
-    ),
+ 
     GetPage(
       name: _Paths.NOTIFICATION,
       page: () => NotificationView(),
@@ -250,17 +246,22 @@ class AppPages {
       page: () => VendorAllShopsView(),
       binding: VendorAllShopsBinding(),
     ),
-   GetPage(
-  name: _Paths.SHOP_PRODUCTS,
-  page: () {
-    final args = Get.arguments as Map<String, dynamic>;
-    return ShopProductsView(
-      storeId: args["storeId"],
-      shopName: args["shopName"],
-    );
-  },
-  binding: ShopProductsBinding(),
-),
+    GetPage(
+      name: _Paths.SHOP_PRODUCTS,
+      page: () {
+        final args = Get.arguments as Map<String, dynamic>;
+        return ShopProductsView(
+          storeId: args["storeId"],
+          shopName: args["shopName"],
+        );
+      },
+      binding: ShopProductsBinding(),
+    ),
 
+    GetPage(
+      name: _Paths.WHISHLIST,
+      page: () =>  WishlistView(),
+      binding: WhishlistBinding(),
+    ),
   ];
 }

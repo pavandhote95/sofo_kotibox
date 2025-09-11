@@ -41,6 +41,8 @@ abstract class Routes {
   static const VENDOR_ALL_SHOPS = _Paths.VENDOR_ALL_SHOPS;
   static const SHOP_PRODUCTS_VIEW = _Paths.SHOP_PRODUCTS_VIEW;
   static const SHOP_PRODUCTS = _Paths.SHOP_PRODUCTS;
+  static const WHISLIST = _Paths.WHISLIST;
+  static const WHISHLIST = _Paths.WHISHLIST;
 }
 
 abstract class _Paths {
@@ -83,4 +85,6 @@ abstract class _Paths {
   static const VENDOR_ALL_SHOPS = '/vendor-all-shops';
   static const SHOP_PRODUCTS_VIEW = '/shop-products-view';
   static const SHOP_PRODUCTS = '/shop-products';
+  static const WHISLIST = '/whislist';
+  static const WHISHLIST = '/whishlist';
 }
