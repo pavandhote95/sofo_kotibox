@@ -33,6 +33,7 @@ dependencies:
 
 
   cached_network_image: ^3.4.1
+  animate_do: ^4.2.0
   # upi_india: ^3.0.1
   # quantupi: ^0.0.6
 dev_dependencies:

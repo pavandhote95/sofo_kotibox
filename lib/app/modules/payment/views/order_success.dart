@@ -1,3 +1,4 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -62,10 +63,13 @@ class OrderSuccessView extends StatelessWidget {
                   ),
                   const SizedBox(height: 80),
                   // Success image (replace with asset if needed)
-                  Image.asset(
-                    'assets/images/order_success.png',
-                    height: height * 0.25,
-                    fit: BoxFit.contain,
+                  FadeInDown(
+                    duration: const Duration(milliseconds: 2000),
+                    child: Image.asset(
+                      'assets/images/order_success.png',
+                      height: height * 0.25,
+                      fit: BoxFit.contain,
+                    ),
                   ),
 
                   const SizedBox(height: 32),
