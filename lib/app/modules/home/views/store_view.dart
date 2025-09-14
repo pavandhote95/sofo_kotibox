@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sofo/app/modules/home/views/ProductDetails/product_details_view.dart';
 import 'package:sofo/app/modules/home/views/store_information.dart';
+import 'package:sofo/app/modules/whishlist/controllers/whishlist_controller.dart';
 import '../../../custom_widgets/app_color.dart';
 import '../../../custom_widgets/loder.dart';
 import '../../../custom_widgets/text_fonts.dart';
@@ -198,6 +199,7 @@ class StoreView extends GetView<StoreController> {
                         ),
                         itemBuilder: (context, index) {
                           var item = items[index];
+                          final itemId = item['id'];
 
                           return Container(
                             padding: EdgeInsets.all(8),
@@ -217,7 +219,7 @@ class StoreView extends GetView<StoreController> {
                                     children: [
                                       InkWell(
                                         onTap: () {
-                                          controller.storage.write('last_product_id', item['id']);
+                                          controller.storage.write('last_product_id', itemId);
                                           Get.to(() => ProductDetailsView(item: item));
                                         },
                                         child: Container(
@@ -242,33 +244,38 @@ class StoreView extends GetView<StoreController> {
                                           ),
                                         ),
                                       ),
-                                      Positioned(
-                                        top: 6,
-                                        right: 6,
-                                        child: Obx(() {
-                                          bool isFav = controller.wishlistStatus[item['id']] ?? false;
-                                          return GestureDetector(
-                                            onTap: () {
-                                              controller.toggleWishlist(item['id']);
-                                            },
-                                            child: Container(
-                                              padding: EdgeInsets.all(6),
-                                              decoration: BoxDecoration(
-                                                color: Colors.white.withOpacity(0.9),
-                                                shape: BoxShape.circle,
-                                                boxShadow: [
-                                                  BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
-                                                ],
-                                              ),
-                                              child: Icon(
-                                                isFav ? Icons.favorite : Icons.favorite_border,
-                                                color: isFav ? AppColor.orange : AppColor.greyText,
-                                                size: 18,
-                                              ),
-                                            ),
-                                          );
-                                        }),
-                                      ),
+      Positioned(
+  top: 6,
+  right: 6,
+  child: Obx(() {
+    bool isFav = controller.wishlistStatus[itemId] ?? false;
+    return GestureDetector(
+      onTap: () {
+        controller.toggleWishlist(itemId);
+      },
+      child: Container(
+        padding: EdgeInsets.all(6),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.9),
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 4,
+              offset: Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Icon(
+          isFav ? Icons.favorite : Icons.favorite_border,
+          size: 18,
+          color: isFav ? AppColor.orange : Colors.grey,
+        ),
+      ),
+    );
+  }),
+)
+
                                     ],
                                   ),
                                 ),
@@ -299,7 +306,7 @@ class StoreView extends GetView<StoreController> {
                                 // Buy Now Button
                                 GestureDetector(
                                   onTap: () {
-                                    controller.storage.write('last_product_id', item['id']);
+                                    controller.storage.write('last_product_id', itemId);
                                     Get.to(() => ProductDetailsView(item: item));
                                   },
                                   child: Container(

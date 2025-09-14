@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sofo/app/custom_widgets/custom_button.dart';
-import 'package:sofo/app/modules/payment/views/payment_card_view.dart';
 import 'package:sofo/app/modules/payment/controllers/payment_controller.dart';
 import 'package:sofo/app/custom_widgets/app_color.dart';
 import 'package:sofo/app/custom_widgets/text_fonts.dart';
+import 'package:sofo/app/modules/payment/views/payment_card_view.dart';
+import 'package:sofo/app/modules/payment/views/order_success.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class PaymentView extends GetView<PaymentController> {
   final String deliveryType;
@@ -14,6 +16,7 @@ class PaymentView extends GetView<PaymentController> {
   final String selectedPayment;
   final double totalPrice;
   final List<int> productIds;
+  final List<int> quantities; // ✅ add quantities here
 
   PaymentView({
     super.key,
@@ -24,6 +27,7 @@ class PaymentView extends GetView<PaymentController> {
     required this.selectedPayment,
     required this.totalPrice,
     required this.productIds,
+    required this.quantities,
   }) {
     Get.put(PaymentController());
   }
@@ -70,8 +74,7 @@ class PaymentView extends GetView<PaymentController> {
                   ),
                 ),
                 const Spacer(),
-                if (isSelected)
-                  Icon(Icons.check_circle, color: AppColor.orange),
+                if (isSelected) Icon(Icons.check_circle, color: AppColor.orange),
               ],
             ),
           ),
@@ -108,7 +111,8 @@ class PaymentView extends GetView<PaymentController> {
               ),
               SafeArea(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   child: Row(
                     children: [
                       IconButton(
@@ -132,9 +136,8 @@ class PaymentView extends GetView<PaymentController> {
             ],
           ),
 
-          // const SizedBox(height: 20),
-          //
-          // // Display delivery details (optional)
+
+          // // Delivery details
           // Padding(
           //   padding: const EdgeInsets.symmetric(horizontal: 16),
           //   child: Column(
@@ -149,37 +152,23 @@ class PaymentView extends GetView<PaymentController> {
           //         ),
           //       ),
           //       const SizedBox(height: 10),
-          //       Text(
-          //         'Delivery Type: $deliveryType',
-          //         style: AppTextStyle.montserrat(fs: 14),
-          //       ),
+          //       Text('Delivery Type: $deliveryType',
+          //           style: AppTextStyle.montserrat(fs: 14)),
           //       if (deliveryType == 'Scheduled') ...[
-          //         Text(
-          //           'Date: $selectedDate',
-          //           style: AppTextStyle.montserrat(fs: 14),
-          //         ),
-          //         Text(
-          //           'Time: $selectedTime',
-          //           style: AppTextStyle.montserrat(fs: 14),
-          //         ),
+          //         Text('Date: $selectedDate',
+          //             style: AppTextStyle.montserrat(fs: 14)),
+          //         Text('Time: $selectedTime',
+          //             style: AppTextStyle.montserrat(fs: 14)),
           //       ],
-          //       Text(
-          //         'Address: $selectedAddress',
-          //         style: AppTextStyle.montserrat(fs: 14),
-          //       ),
-          //       Text(
-          //         'Total Price: \$${totalPrice.toStringAsFixed(2)}',
-          //         style: AppTextStyle.montserrat(fs: 14),
-          //       ),
-          //       Text(
-          //         'Product IDs: $productIds',
-          //         style: AppTextStyle.montserrat(fs: 14),
-          //       ),
+          //       Text('Address: $selectedAddress',
+          //           style: AppTextStyle.montserrat(fs: 14)),
+          //       Text('Total Price: ₹${totalPrice.toStringAsFixed(2)}',
+          //           style: AppTextStyle.montserrat(fs: 14)),
           //     ],
           //   ),
           // ),
-          //
-          // const SizedBox(height: 20),
+
+
 
           // Header row
           Padding(
@@ -195,12 +184,17 @@ class PaymentView extends GetView<PaymentController> {
                   ),
                 ),
                 const Spacer(),
-                Text(
-                  'Add Card',
-                  style: AppTextStyle.montserrat(
-                    fs: 16,
-                    fw: FontWeight.w500,
-                    c: AppColor.orange,
+                GestureDetector(
+                  onTap: () {
+                    Get.to(() => AddCardView());
+                  },
+                  child: Text(
+                    'Add Card',
+                    style: AppTextStyle.montserrat(
+                      fs: 16,
+                      fw: FontWeight.w500,
+                      c: AppColor.orange,
+                    ),
                   ),
                 ),
               ],
@@ -214,10 +208,12 @@ class PaymentView extends GetView<PaymentController> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               children: [
-                buildOption(index: 0, image: 'assets/icons/wallet.png', title: 'Wallet'),
-                buildOption(index: 1, image: 'assets/icons/apple.png', title: 'Apple Pay'),
-                buildOption(index: 2, image: 'assets/icons/stripe.png', title: 'Stripe'),
-                buildOption(index: 3, image: 'assets/icons/asian_bank.png', title: 'Asian Bank'),
+                for (int i = 0; i < paymentOptions.length; i++)
+                  buildOption(
+                    index: i,
+                    image: paymentOptions[i]['image'],
+                    title: paymentOptions[i]['title'],
+                  ),
               ],
             ),
           ),
@@ -226,15 +222,23 @@ class PaymentView extends GetView<PaymentController> {
 
           // Confirm Button
           SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
-              child: CustomButton(
-                text: "Confirm",
-                onPressed: () {
-                  // Pass data to AddCardView if needed
-                  Get.to(() => AddCardView(
 
-                  ));
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+              child: CustomButton(
+                text: "Confirm Payment",
+                onPressed: () async {
+                  if (controller.selectedIndex == -1) {
+                    Fluttertoast.showToast(msg: "Please select a payment option");
+                    return;
+                  }
+
+                  // Simulate successful payment API
+                  Fluttertoast.showToast(msg: "Payment Successful ✅");
+
+                  /// ✅ Redirect to order success
+                  Get.offAll(() => OrderSuccessView());
                 },
               ),
             ),

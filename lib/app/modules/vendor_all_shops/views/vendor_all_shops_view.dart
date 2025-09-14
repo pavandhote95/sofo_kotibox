@@ -8,6 +8,7 @@ import 'package:sofo/app/custom_widgets/text_fonts.dart';
 import 'package:sofo/app/modules/shop_products/views/shop_products_view.dart';
 import '../controllers/vendor_all_shops_controller.dart';
 
+
 class VendorAllShopsView extends StatelessWidget {
   VendorAllShopsView({super.key});
 
@@ -186,4 +187,5 @@ class VendorAllShopsView extends StatelessWidget {
       }),
     );
   }
+
 }

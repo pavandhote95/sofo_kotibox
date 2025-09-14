@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+
 import '../modules/Dashboard/bindings/dashboard_binding.dart';
 import '../modules/Dashboard/views/dashboard_view.dart';
 import '../modules/Earnings/bindings/earnings_binding.dart';
@@ -27,6 +28,8 @@ import '../modules/add_address/bindings/add_address_binding.dart';
 import '../modules/add_address/views/add_address_view.dart';
 import '../modules/all_address_list/bindings/all_address_list_binding.dart';
 import '../modules/all_address_list/views/all_address_list_view.dart';
+import '../modules/choose_deliverydatetime/bindings/choose_deliverydatetime_binding.dart';
+import '../modules/choose_deliverydatetime/views/choose_deliverydatetime_view.dart';
 import '../modules/edit_address/bindings/edit_address_binding.dart';
 import '../modules/edit_address/views/edit_address_view.dart';
 import '../modules/getstarted/bindings/getstarted_binding.dart';
@@ -63,7 +66,6 @@ import '../modules/vendorwallet/bindings/vendorwallet_binding.dart';
 import '../modules/vendorwallet/views/vendorwallet_view.dart';
 import '../modules/whishlist/bindings/whishlist_binding.dart';
 import '../modules/whishlist/views/whishlist_view.dart';
-
 import '../modules/your_page_name/bindings/your_page_name_binding.dart';
 import '../modules/your_page_name/views/your_page_name_view.dart';
 
@@ -111,29 +113,37 @@ class AppPages {
       binding: AccountBinding(),
     ),
 
-    GetPage(
-      name: _Paths.PAYMENT,
-      page: () {
-        // Expect arguments to be passed when navigating to PaymentView
-        final args = Get.arguments ?? {};
-        return PaymentView(
-          deliveryType: args['deliveryType'] ?? '',
-          selectedDate: args['selectedDate'] ?? '',
-          selectedTime: args['selectedTime'] ?? '',
-          selectedAddress: args['selectedAddress'] ?? '',
-          selectedPayment: args['selectedPayment'] ?? '',
-          totalPrice: args['totalPrice']?.toDouble() ?? 0.0,
-          productIds: args['productIds']?.cast<int>() ?? [],
-        );
-      },
-      binding: PaymentBinding(),
-    ),
+   GetPage(
+  name: _Paths.PAYMENT,
+  page: () {
+    final args = Get.arguments as Map<String, dynamic>? ?? {};
+
+    return PaymentView(
+      deliveryType: args['deliveryType'] as String? ?? '',
+      selectedDate: args['selectedDate'] as String? ?? '',
+      selectedTime: args['selectedTime'] as String? ?? '',
+      selectedAddress: args['selectedAddress'] as String? ?? '',
+      selectedPayment: args['selectedPayment'] as String? ?? '',
+      totalPrice: (args['totalPrice'] is num)
+          ? (args['totalPrice'] as num).toDouble()
+          : 0.0,
+      productIds: (args['productIds'] is List)
+          ? List<int>.from(args['productIds'])
+          : <int>[],
+      quantities: (args['quantities'] is List)
+          ? List<int>.from(args['quantities'])
+          : <int>[],
+    );
+  },
+  binding: PaymentBinding(),
+),
+
     GetPage(
       name: _Paths.SEARCHING,
       page: () => SearchingView(),
       binding: SearchingBinding(),
     ),
- 
+
     GetPage(
       name: _Paths.NOTIFICATION,
       page: () => NotificationView(),
@@ -260,8 +270,13 @@ class AppPages {
 
     GetPage(
       name: _Paths.WHISHLIST,
-      page: () =>  WishlistView(),
+      page: () => WishlistView(),
       binding: WhishlistBinding(),
+    ),
+    GetPage(
+      name: _Paths.CHOOSE_DELIVERYDATETIME,
+      page: () => const ChooseDeliverydatetimeView(),
+      binding: ChooseDeliverydatetimeBinding(),
     ),
   ];
 }

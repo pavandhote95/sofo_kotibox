@@ -123,16 +123,19 @@ class CartController extends GetxController {
     }
   }
 
-  void checkout() {
-    final total = totalPrice;
-    final productIds = cartItems.map<int>((item) => item['product_id']).toList();
+ void checkout() {
+  final total = totalPrice;
+  final productIds = cartItems.map<int>((item) => item['product_id']).toList();
+  final productQuantities = List<int>.from(quantities); // pass quantities also
 
-    Get.to(
-          () => CheckoutView(
-        totalPrice: total,
-        productIds: productIds,
-      ),
-    );
-  }
+  Get.to(
+    () => CheckoutView(
+      totalPrice: total,
+      productIds: productIds,
+      quantities: productQuantities, // 👈 new
+    ),
+  );
+}
+
 
 }

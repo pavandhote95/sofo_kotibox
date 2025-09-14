@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sofo/app/modules/account/views/account_view.dart';
+import 'package:sofo/app/modules/home/views/ProductDetails/product_details_view.dart';
 import 'package:sofo/app/modules/order/views/order_view.dart';
 
 import '../../cart/views/cart_view.dart';
@@ -14,6 +15,7 @@ class DashboardController extends GetxController {
     OrderView(),
     CartView(),
     AccountView(),
+ 
   ];
 
   void changeIndex(int index) {

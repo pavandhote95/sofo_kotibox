@@ -1,22 +1,37 @@
 import 'dart:convert';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:sofo/app/custom_widgets/snacbar.dart';
+import 'package:sofo/app/modules/home/controllers/store_controller.dart';
 class WhishlistController extends GetxController {
-  // ✅ Observable list
   var wishlist = <Map<String, dynamic>>[].obs;
   var isLoading = false.obs;
 
-  final int appUserId = 3; // dummy id (dynamic bhi kar sakte ho)
+  final storage = GetStorage();
+  int? appUserId;
+  String? token;
+
+  StoreController get storeController {
+    return Get.isRegistered<StoreController>()
+        ? Get.find<StoreController>()
+        : Get.put(StoreController());
+  }
 
   @override
   void onInit() {
     super.onInit();
-    fetchWishlist();
+    appUserId = storage.read('userId');
+    token = storage.read('token');
+    if (appUserId != null) {
+      fetchWishlist();
+    }
   }
 
-  /// ✅ Fetch wishlist from API
+  /// ✅ Fetch wishlist
   Future<void> fetchWishlist() async {
+    if (appUserId == null) return;
+
     try {
       isLoading.value = true;
       wishlist.clear();
@@ -24,35 +39,106 @@ class WhishlistController extends GetxController {
       final url = Uri.parse(
           "http://kotiboxglobaltech.com/sofo_app/api/wishlist?app_user_id=$appUserId");
 
-      print("🔹 Fetching wishlist: $url");
-
-      final response = await http.get(url);
-
-      print("🔹 Response Code: ${response.statusCode}");
-      print("🔹 Response Body: ${response.body}");
+      final response = await http.get(url, headers: {
+        "Authorization": "Bearer $token",
+      });
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
 
-        // ✅ Correct keys: success + data
         if (data["success"] == true && data["data"] != null) {
-          wishlist.addAll(
-            List<Map<String, dynamic>>.from(data["data"]),
-          );
+          final list = List<Map<String, dynamic>>.from(data["data"]);
+          wishlist.addAll(list);
+
+          // Update storeController status
+          storeController.wishlistStatus.clear();
+          for (var item in storeController.storeItems) {
+            int id = item['id'];
+            bool isFav = list.any((wish) => wish['id'] == id);
+            storeController.wishlistStatus[id] = isFav;
+            storeController.storage.write('wishlist_$id', isFav);
+          }
+          storeController.wishlistStatus.refresh();
         }
-      } else {
-        print("❌ Failed to fetch wishlist: ${response.reasonPhrase}");
       }
-    } catch (e, stack) {
+    } catch (e) {
       print("❌ Wishlist fetch error: $e");
-      print(stack);
     } finally {
       isLoading.value = false;
     }
   }
 
-  /// ✅ Remove item locally
-  void removeFromWishlist(int index) {
-    wishlist.removeAt(index);
+  /// ✅ Add to wishlist
+  Future<void> addToWishlist(Map<String, dynamic> product) async {
+    try {
+      final url =
+          Uri.parse("http://kotiboxglobaltech.com/sofo_app/api/wishlist/add");
+
+      final response = await http.post(
+        url,
+        headers: {"Authorization": "Bearer $token"},
+        body: {
+          "app_user_id": appUserId.toString(),
+          "product_id": product['id'].toString(),
+        },
+      );
+
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200 && data["status"] == true) {
+        wishlist.add(product);
+
+        storeController.wishlistStatus[product['id']] = true;
+        storeController.storage.write('wishlist_${product['id']}', true);
+        storeController.wishlistStatus.refresh();
+
+        // ✅ Toast
+        Utils.showToast(data["message"] ?? "Added to wishlist");
+      } else {
+        Utils.showErrorToast(data["message"] ?? "Failed to add");
+      }
+    } catch (e) {
+      print("❌ Add to wishlist error: $e");
+      Utils.showErrorToast("Something went wrong");
+    }
+  }
+
+  /// ✅ Remove from wishlist
+ /// ✅ Remove from wishlist
+/// ✅ Remove from wishlist
+Future<void> removeFromWishlist(int productId) async {
+  try {
+    final url = Uri.parse(
+        "http://kotiboxglobaltech.com/sofo_app/api/wishlist/delete/$productId");
+
+    final response = await http.delete(
+      url,
+      headers: {"Authorization": "Bearer $token"},
+    );
+
+    final data = jsonDecode(response.body);
+    if (response.statusCode == 200 && data["status"] == true) {
+      // Remove from local wishlist
+      wishlist.removeWhere((item) => item['id'] == productId);
+
+      // ✅ Update storeController state directly
+      storeController.wishlistStatus[productId] = false;
+      storeController.storage.write('wishlist_$productId', false);
+      storeController.wishlistStatus.refresh();
+      storeController.toggleWishlist(productId); // UI refresh
+
+      // ✅ Toast
+      Utils.showToast(data["message"] ?? "Removed from wishlist");
+    } else {
+      Utils.showErrorToast(data["message"] ?? "Failed to remove");
+    }
+  } catch (e) {
+    print("❌ Remove wishlist error: $e");
+    Utils.showErrorToast("Something went wrong");
   }
 }
+
+
+}
+
+ 

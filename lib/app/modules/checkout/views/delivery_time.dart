@@ -1,22 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:sofo/app/custom_widgets/app_color.dart';
 import 'package:sofo/app/custom_widgets/custom_button.dart';
 import 'package:sofo/app/custom_widgets/text_fonts.dart';
-import 'package:sofo/app/modules/payment/views/payment_view.dart';
+import 'package:sofo/app/modules/checkout/controllers/checkout_controller.dart';
+import 'package:sofo/app/modules/payment/views/order_success.dart';
+
 
 class ChooseDeliveryTimeView extends StatefulWidget {
   final String seledtedaddress;
   final String selectedpayment;
   final double totalPrice;
   final List<int> productIds;
+    final List<int> quantities; 
   const ChooseDeliveryTimeView({
     super.key,
     required this.seledtedaddress,
     required this.selectedpayment,
     required this.totalPrice,
     required this.productIds,
+        required this.quantities,
   });
 
   @override
@@ -176,35 +181,72 @@ class _ChooseDeliveryTimeViewState extends State<ChooseDeliveryTimeView> {
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 10.0),
-          child: CustomButton(
-            text: "Confirm Delivery Time",
-            onPressed: () {
-              String selectedDateStr = '';
-              String selectedTime = '';
+          child: 
+          
+   CustomButton(
+  text: "Place Order",
+  onPressed: () async {
+    String selectedDateStr = '';
+    String selectedTime = '';
 
-              if (deliveryType == "Scheduled") {
-                final selectedDate = _generateDates(currentMonth)[selectedDateIndex];
-                selectedTime = selectedTimeIndex != -1
-                    ? times[selectedTimeIndex]
-                    : 'Not selected';
-                selectedDateStr =
-                "${selectedDate.day}-${selectedDate.month}-${selectedDate.year}";
-                print("Scheduled: $selectedDateStr at $selectedTime");
-              } else {
-                print("Delivery Type: Regular");
-              }
+    if (deliveryType == "Scheduled") {
+      final selectedDate = _generateDates(currentMonth);
 
-              Get.to(() => PaymentView(
-                deliveryType: deliveryType,
-                selectedDate: selectedDateStr,
-                selectedTime: selectedTime,
-                selectedAddress: widget.seledtedaddress,
-                selectedPayment: widget.selectedpayment,
-                totalPrice: widget.totalPrice,
-                productIds: widget.productIds,
-              ));
-            },
-          ),
+      // ✅ Date validation
+      if (selectedDateIndex < 0 || selectedDateIndex >= selectedDate.length) {
+        Fluttertoast.showToast(
+          msg: "Please select a date",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.black87,
+          textColor: Colors.white,
+          fontSize: 14.0,
+        );
+        return;
+      }
+
+      // ✅ Time validation
+      if (selectedTimeIndex == -1) {
+        Fluttertoast.showToast(
+          msg: "Please select a time",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.black87,
+          textColor: Colors.white,
+          fontSize: 14.0,
+        );
+        return;
+      }
+
+      selectedDateStr =
+          "${selectedDate[selectedDateIndex].year}-${selectedDate[selectedDateIndex].month.toString().padLeft(2, '0')}-${selectedDate[selectedDateIndex].day.toString().padLeft(2, '0')}";
+      selectedTime = times[selectedTimeIndex];
+    } else {
+      // ✅ Regular delivery
+      selectedDateStr = DateTime.now().toString().split(" ")[0];
+      selectedTime = "ASAP";
+    }
+
+    final checkoutController = Get.find<CheckoutController>();
+
+    final success = await checkoutController.placeOrder(
+      productIds: widget.productIds,
+      quantities: widget.quantities,
+      paymentMethod: widget.selectedpayment.toLowerCase(),
+      deliveryType: deliveryType.toLowerCase(),
+      selectedDate: selectedDateStr,
+      selectedTime: selectedTime,
+      selectPayment: "full",
+    );
+
+    // ✅ Success hone par OrderSuccessView khol do
+    if (success) {
+      Get.offAll(() => OrderSuccessView());
+    }
+  },
+)
+
+      
         ),
       ),
     );

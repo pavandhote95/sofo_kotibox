@@ -21,5 +21,6 @@ const String gettocartlist = "$baseUrl/api/cart";
 const String deletecartlist = "$baseUrl/api/cart/";
  const String checkoutListApi = "${baseUrl}/api/auth/checkout-list";
 const String addressListApi = "$baseUrl/api/auth/addresses-list";
+const String wishlistUrl = "$baseUrl/wishlist";
 
 // https://kotiboxglobaltech.com/sofo_app/api/stores/2

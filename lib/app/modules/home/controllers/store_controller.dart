@@ -17,7 +17,7 @@ class StoreController extends GetxController {
   var filteredItems = <Map<String, dynamic>>[].obs;
   var searchQuery = "".obs;
 
-  /// Wishlist status map
+  /// ✅ Wishlist status map
   var wishlistStatus = <int, bool>{}.obs;
 
   final storage = GetStorage();
@@ -27,7 +27,8 @@ class StoreController extends GetxController {
   Future<void> getStoreList(String storeId) async {
     try {
       isLoading(true);
-      final response = await restApi.getWithAuthApi('${getStoreItemListUrl}$storeId');
+      final response =
+          await restApi.getWithAuthApi('${getStoreItemListUrl}$storeId');
       final responseJson = json.decode(response.body);
 
       if (response.statusCode == 200 && responseJson["success"] == true) {
@@ -49,20 +50,22 @@ class StoreController extends GetxController {
   Future<void> getStoreitemList(String storeId) async {
     try {
       isLoading(true);
-      final response = await restApi.getWithAuthApi('${getStoreitemUrl}$storeId');
+      final response =
+          await restApi.getWithAuthApi('${getStoreitemUrl}$storeId');
       final responseJson = json.decode(response.body);
 
       if (response.statusCode == 200) {
-        storeItems.value = List<Map<String, dynamic>>.from(responseJson["data"] ?? []);
+        storeItems.value =
+            List<Map<String, dynamic>>.from(responseJson["data"] ?? []);
         filteredItems.assignAll(storeItems);
 
-        // ✅ Initialize wishlist from API response if available, else local storage
+        // ✅ Initialize wishlist correctly
         for (var item in storeItems) {
           int id = item['id'];
           bool status = false;
 
           if (item.containsKey('is_wishlist')) {
-            status = item['is_wishlist'] == 1; // API se wishlist flag
+            status = item['is_wishlist'] == 1; // API flag
           } else {
             status = storage.read('wishlist_$id') ?? false; // fallback
           }
@@ -99,40 +102,71 @@ class StoreController extends GetxController {
   }
 
   /// Toggle wishlist
-  Future<void> toggleWishlist(int productId) async {
-    try {
-      bool currentStatus = wishlistStatus[productId] ?? false;
-      wishlistStatus[productId] = !currentStatus; // UI update immediately
+/// Toggle wishlist
+/// Toggle wishlist
+Future<void> toggleWishlist(int productId) async {
+  try {
+    bool currentStatus = wishlistStatus[productId] ?? false;
+    wishlistStatus[productId] = !currentStatus; // UI instant update
 
-      String? token = await restApi.getToken();
-      if (token == null) {
-        Utils.showErrorToast("User not logged in");
-        wishlistStatus[productId] = currentStatus;
-        return;
-      }
+    print("🔄 Toggling wishlist for Product ID: $productId");
+    print("🔹 Current local status: $currentStatus");
 
-      var headers = {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      };
+    String? token = await restApi.getToken();
+    if (token == null) {
+      print("❌ User not logged in");
+      Utils.showErrorToast("User not logged in");
+      wishlistStatus[productId] = currentStatus; // revert
+      return;
+    }
 
-      var url = Uri.parse('http://kotiboxglobaltech.com/sofo_app/api/wishlist/toggle');
-      var body = jsonEncode({"storeitem_id": productId});
+    var headers = {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    };
 
-      var response = await http.post(url, headers: headers, body: body);
+    var url = Uri.parse('http://kotiboxglobaltech.com/sofo_app/api/wishlist/toggle');
+    var body = jsonEncode({"storeitem_id": productId});
 
-      if (response.statusCode == 200) {
-        Utils.showToast("Wishlist updated");
-        // ✅ Store in local storage
-        storage.write('wishlist_$productId', wishlistStatus[productId]);
+    print("🟠 API Request URL: $url");
+    print("🟠 Request Body: $body");
+
+    var response = await http.post(url, headers: headers, body: body);
+
+    print("🟢 Raw Response Code: ${response.statusCode}");
+    print("🟢 Raw Response Body: ${response.body}");
+
+    if (response.statusCode == 200) {
+      final resp = jsonDecode(response.body);
+      print("🟢 Decoded Response: $resp");
+
+      if (resp["success"] == true) {
+        bool apiLiked = resp["liked"] ?? false;
+
+        // ✅ update state according to API response
+        wishlistStatus[productId] = apiLiked;
+
+        // ✅ Save locally
+        storage.write('wishlist_$productId', apiLiked);
+
+        print("✅ API Liked: $apiLiked (Product $productId)");
+        Utils.showToast(resp["message"]);
       } else {
         wishlistStatus[productId] = currentStatus; // revert
-        Utils.showErrorToast("Failed to update wishlist");
+        print("⚠️ API Failed: ${resp["message"]}");
+        Utils.showErrorToast(resp["message"]);
       }
-    } catch (e) {
-      print('❌ Wishlist toggle error: $e');
-      wishlistStatus[productId] = !(wishlistStatus[productId] ?? false);
-      Utils.showErrorToast("Something went wrong");
+    } else {
+      wishlistStatus[productId] = currentStatus; // revert
+      print("❌ Wishlist update failed. Status: ${response.statusCode}");
+      Utils.showErrorToast("Failed to update wishlist");
     }
+  } catch (e) {
+    print('❌ Wishlist toggle error: $e');
+    // ❌ yaha ulta karna galat tha
+    // ✅ sahi: original status par revert karo
+    wishlistStatus[productId] = wishlistStatus[productId] ?? false;
+    Utils.showErrorToast("Something went wrong");
   }
+}
 }

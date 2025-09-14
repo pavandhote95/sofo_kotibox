@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sofo/app/custom_widgets/curved_top_container.dart';
+import 'package:sofo/app/modules/home/controllers/store_controller.dart';
 import 'package:sofo/app/modules/whishlist/controllers/whishlist_controller.dart';
 import '../../../custom_widgets/app_color.dart';
 import '../../../custom_widgets/text_fonts.dart';
@@ -70,6 +71,7 @@ class WishlistView extends StatelessWidget {
                       separatorBuilder: (_, __) => const SizedBox(height: 12),
                       itemBuilder: (context, index) {
                         final item = controller.wishlist[index];
+
                         return Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
@@ -130,13 +132,16 @@ class WishlistView extends StatelessWidget {
                                 ),
                               ),
 
-                              // 🗑️ Remove Button
-                              IconButton(
-                                icon: Icon(Icons.delete, color: AppColor.grey),
-                                onPressed: () {
-                                  controller.removeFromWishlist(index);
-                                },
-                              ),
+                              // ❤️ Always Orange when in Wishlist
+// ❤️ Delete Button to remove from wishlist
+// IconButton(
+//   icon: const Icon(Icons.delete, color: Colors.orange),
+//   onPressed: () {
+//     controller.removeFromWishlist(item['id']);
+//   },
+// ),
+
+
                             ],
                           ),
                         );
