@@ -61,7 +61,7 @@ import '../modules/vendor_all_shops/views/vendor_all_shops_view.dart';
 import '../modules/vendor_customers/bindings/vendor_customers_binding.dart';
 import '../modules/vendor_customers/views/vendor_customers_view.dart';
 import '../modules/vendor_order_history/bindings/vendor_order_history_binding.dart';
-import '../modules/vendor_order_history/views/vendor_order_history_view.dart';
+import '../modules/vendor_order_history/views/vendor_order_history_view.dart' hide OrderView;
 import '../modules/vendor_registration_success/bindings/vendor_registration_success_binding.dart';
 import '../modules/vendor_registration_success/views/vendor_registration_success_view.dart';
 import '../modules/vendorwallet/bindings/vendorwallet_binding.dart';
