@@ -60,6 +60,8 @@ import '../modules/vendor_all_shops/bindings/vendor_all_shops_binding.dart';
 import '../modules/vendor_all_shops/views/vendor_all_shops_view.dart';
 import '../modules/vendor_customers/bindings/vendor_customers_binding.dart';
 import '../modules/vendor_customers/views/vendor_customers_view.dart';
+import '../modules/vendor_order_history/bindings/vendor_order_history_binding.dart';
+import '../modules/vendor_order_history/views/vendor_order_history_view.dart';
 import '../modules/vendor_registration_success/bindings/vendor_registration_success_binding.dart';
 import '../modules/vendor_registration_success/views/vendor_registration_success_view.dart';
 import '../modules/vendorwallet/bindings/vendorwallet_binding.dart';
@@ -113,30 +115,30 @@ class AppPages {
       binding: AccountBinding(),
     ),
 
-   GetPage(
-  name: _Paths.PAYMENT,
-  page: () {
-    final args = Get.arguments as Map<String, dynamic>? ?? {};
+    GetPage(
+      name: _Paths.PAYMENT,
+      page: () {
+        final args = Get.arguments as Map<String, dynamic>? ?? {};
 
-    return PaymentView(
-      deliveryType: args['deliveryType'] as String? ?? '',
-      selectedDate: args['selectedDate'] as String? ?? '',
-      selectedTime: args['selectedTime'] as String? ?? '',
-      selectedAddress: args['selectedAddress'] as String? ?? '',
-      selectedPayment: args['selectedPayment'] as String? ?? '',
-      totalPrice: (args['totalPrice'] is num)
-          ? (args['totalPrice'] as num).toDouble()
-          : 0.0,
-      productIds: (args['productIds'] is List)
-          ? List<int>.from(args['productIds'])
-          : <int>[],
-      quantities: (args['quantities'] is List)
-          ? List<int>.from(args['quantities'])
-          : <int>[],
-    );
-  },
-  binding: PaymentBinding(),
-),
+        return PaymentView(
+          deliveryType: args['deliveryType'] as String? ?? '',
+          selectedDate: args['selectedDate'] as String? ?? '',
+          selectedTime: args['selectedTime'] as String? ?? '',
+          selectedAddress: args['selectedAddress'] as String? ?? '',
+          selectedPayment: args['selectedPayment'] as String? ?? '',
+          totalPrice: (args['totalPrice'] is num)
+              ? (args['totalPrice'] as num).toDouble()
+              : 0.0,
+          productIds: (args['productIds'] is List)
+              ? List<int>.from(args['productIds'])
+              : <int>[],
+          quantities: (args['quantities'] is List)
+              ? List<int>.from(args['quantities'])
+              : <int>[],
+        );
+      },
+      binding: PaymentBinding(),
+    ),
 
     GetPage(
       name: _Paths.SEARCHING,
@@ -278,5 +280,10 @@ class AppPages {
       page: () => const ChooseDeliverydatetimeView(),
       binding: ChooseDeliverydatetimeBinding(),
     ),
+    // GetPage(
+    //   name: _Paths.VENDOR_ORDER_HISTORY,
+    //   page: () => const VendorOrderHistoryView(),
+    //   binding: VendorOrderHistoryBinding(),
+    // ),
   ];
 }

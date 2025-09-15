@@ -12,6 +12,7 @@ class AddAddressView extends StatelessWidget {
   final AddAddressController controller = Get.put(AddAddressController());
 
   @override
+
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final width = size.width;

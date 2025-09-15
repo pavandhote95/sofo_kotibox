@@ -34,11 +34,18 @@ dependencies:
 
   cached_network_image: ^3.4.1
   animate_do: ^4.2.0
+  flutter_launcher_icons: ^0.14.4
   # upi_india: ^3.0.1
   # quantupi: ^0.0.6
 dev_dependencies:
   flutter_test:
     sdk: flutter
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/logo.png"
+  adaptive_icon_foreground: "assets/icon/logo.png"
+  adaptive_icon_background: "#FF5722" # Swiggy-style orange
 
 
 

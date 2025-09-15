@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
-import 'package:get/get_state_manager/src/simple/get_view.dart';
 import 'package:sofo/app/custom_widgets/app_color.dart';
 import 'package:sofo/app/custom_widgets/curved_top_container.dart';
-
+import 'package:sofo/app/custom_widgets/loder.dart';
 import 'package:sofo/app/custom_widgets/text_fonts.dart';
 import 'package:sofo/app/modules/order/controllers/order_controller.dart';
 import 'package:sofo/app/modules/order/views/order_details_view.dart';
@@ -16,16 +13,14 @@ class OrderView extends GetView<OrderController> {
   final OrderController controller = Get.put(OrderController());
 
   @override
-  @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
       backgroundColor: AppColor.backgroundColor,
       body: Stack(
         children: [
           /// Decorative top curve
-       CurvedTopRightBackground(),
+          CurvedTopRightBackground(),
+
           /// Main content
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -33,7 +28,7 @@ class OrderView extends GetView<OrderController> {
               const SizedBox(height: 45),
               Center(
                 child: Text(
-                  'Order Overview',
+                  'Order History',
                   style: AppTextStyle.montserrat(
                     fs: 20,
                     fw: FontWeight.w600,
@@ -42,41 +37,34 @@ class OrderView extends GetView<OrderController> {
               ),
               const SizedBox(height: 20),
 
-              /// Tabs (non-scrollable)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      buildTabButton("Delivered"),
-                      buildTabButton("Processing"),
-                      buildTabButton("Cancelled"),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-
               /// Scrollable Order List
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Obx(() => ListView.builder(
-                    padding: EdgeInsets.zero,
-                    itemCount: controller.filteredOrders.length,
-                    itemBuilder: (context, index) {
-                      final order = controller.filteredOrders[index];
-                      return GestureDetector(
-                        onTap: () {
-                          Get.to(OrderDetailsView());
-                        // Get.to(MapDeliveryStatusView());
+                  child: Obx(() {
+                    if (controller.isLoading.value) {
+                      return  Center(child: CustomLoadingIndicator());
+                    }
 
-                        },
-                        child: buildOrderCard(context,order),
-                      );
-                    },
-                  )),
+                    if (controller.allOrders.isEmpty) {
+                      return const Center(child: Text("No orders found"));
+                    }
+
+                    return ListView.builder(
+                      padding: EdgeInsets.zero,
+                      itemCount: controller.allOrders.length,
+                      itemBuilder: (context, index) {
+                        final order = controller.allOrders[index];
+                        return GestureDetector(
+                          onTap: () {
+                            Get.to(() => OrderDetailsView(),
+                                arguments: order); // ✅ pass order details
+                          },
+                          child: buildOrderCard(context, order),
+                        );
+                      },
+                    );
+                  }),
                 ),
               ),
             ],
@@ -84,32 +72,6 @@ class OrderView extends GetView<OrderController> {
         ],
       ),
     );
-  }
-
-
-  Widget buildTabButton(String title) {
-    return Obx(() {
-      final isSelected = controller.selectedTab.value == title;
-      return GestureDetector(
-        onTap: () => controller.selectedTab.value = title,
-        child: Container(
-          margin: const EdgeInsets.only(right: 10),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: BoxDecoration(
-            color: isSelected ? Colors.black : Colors.grey.shade200,
-            borderRadius: BorderRadius.circular(30),
-          ),
-          child: Text(
-            title,
-            style: AppTextStyle.montserrat(
-              fs: 13,
-              fw: FontWeight.w500,
-              c: isSelected ? Colors.white : Colors.black,
-            ),
-          ),
-        ),
-      );
-    });
   }
 
   Widget buildOrderCard(BuildContext context, Map<String, dynamic> order) {
@@ -135,7 +97,7 @@ class OrderView extends GetView<OrderController> {
             children: [
               Expanded(
                 child: Text(
-                  "Order ${order['orderId']}",
+                  "Order Id# ${order['orderId']}",
                   style: AppTextStyle.montserrat(fs: 15, fw: FontWeight.w600),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -152,7 +114,7 @@ class OrderView extends GetView<OrderController> {
           Row(
             children: [
               Text(
-                "Tracking Number: ",
+                "Order Number : ",
                 style: AppTextStyle.montserrat(fs: 12, c: AppColor.greyText),
               ),
               Expanded(
@@ -171,33 +133,35 @@ class OrderView extends GetView<OrderController> {
             children: [
               Expanded(
                   child: Row(
-                    children: [
-                      Text(
-                        "Quantity: ",
-                        style: AppTextStyle.montserrat(fs: 12, c: AppColor.greyText),
-                      ),
-                      Text(
-                        "${order['quantity']}",
-                        style: AppTextStyle.montserrat(fs: 13, fw: FontWeight.w600),
-                      )
-                    ],
+                children: [
+                  Text(
+                    "Quantity: ",
+                    style:
+                        AppTextStyle.montserrat(fs: 12, c: AppColor.greyText),
+                  ),
+                  Text(
+                    "${order['quantity']}",
+                    style:
+                        AppTextStyle.montserrat(fs: 13, fw: FontWeight.w600),
                   )
-              ),
+                ],
+              )),
               Expanded(
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text(
-                        "Total Amount: ",
-                        style: AppTextStyle.montserrat(fs: 12, c: AppColor.greyText),
-                      ),
-                      Text(
-                        "\$${order['amount']}",
-                        style: AppTextStyle.montserrat(fs: 13, fw: FontWeight.w600),
-                      )
-                    ],
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    "Total Amount: ",
+                    style:
+                        AppTextStyle.montserrat(fs: 12, c: AppColor.greyText),
+                  ),
+                  Text(
+                    "\$${order['amount']}",
+                    style:
+                        AppTextStyle.montserrat(fs: 13, fw: FontWeight.w600),
                   )
-              )
+                ],
+              ))
             ],
           ),
           const SizedBox(height: 16),
@@ -207,41 +171,34 @@ class OrderView extends GetView<OrderController> {
             children: [
               Expanded(
                   child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
                       decoration: BoxDecoration(
                         color: AppColor.orange,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Center(
-                          child: Text(
-                              "Details",
+                          child: Text("Details",
                               style: AppTextStyle.montserrat(
                                 fs: 12,
                                 c: Colors.white,
                                 fw: FontWeight.w600,
-                              )
-                          )
-                      )
-                  )
-              ),
+                              ))))),
+
+              /// Status
               Expanded(
                   child: Align(
                       alignment: Alignment.centerRight,
-                      child: Text(
-                          order['status'],
+                      child: Text(order['status'],
                           style: AppTextStyle.montserrat(
                             fs: 13,
                             fw: FontWeight.w600,
                             c: AppColor.orange,
-                          )
-                      )
-                  )
-              )
+                          ))))
             ],
           )
         ],
       ),
     );
   }
-
 }
