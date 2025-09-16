@@ -5,7 +5,8 @@ import 'package:sofo/app/custom_widgets/curved_top_container.dart';
 import 'package:sofo/app/custom_widgets/loder.dart';
 import 'package:sofo/app/custom_widgets/text_fonts.dart';
 import 'package:sofo/app/modules/order/controllers/order_controller.dart';
-import 'package:sofo/app/modules/order/views/order_details_view.dart';
+
+import 'package:sofo/app/modules/user_order_details/views/user_order_details_view.dart';
 
 class OrderView extends GetView<OrderController> {
   OrderView({super.key});
@@ -56,10 +57,13 @@ class OrderView extends GetView<OrderController> {
                       itemBuilder: (context, index) {
                         final order = controller.allOrders[index];
                         return GestureDetector(
-                          onTap: () {
-                            Get.to(() => OrderDetailsView(),
-                                arguments: order); // ✅ pass order details
-                          },
+onTap: () {
+  Get.to(() => UserOrderDetailsView(),
+      arguments: {"order_id": order['orderId']}); // ✅ Correct
+},
+
+
+
                           child: buildOrderCard(context, order),
                         );
                       },

@@ -9,6 +9,7 @@ import 'package:sofo/app/modules/notification/views/setting_view.dart';
 import 'package:sofo/app/modules/order/views/order_view.dart';
 import 'package:sofo/app/modules/vendor_all_shops/views/vendor_all_shops_view.dart';
 import 'package:sofo/app/modules/vendor_customers/views/vendor_customers_view.dart';
+import 'package:sofo/app/modules/vendor_order_history/views/vendor_order_history_view.dart';
 import 'package:sofo/app/modules/vendorearning/views/vendor_earning_view.dart';
 import 'package:sofo/app/modules/vendorwallet/views/vendorwallet_view.dart';
   import '../../../custom_widgets/CustomAppBar.dart';
@@ -54,7 +55,7 @@ import '../../Vendorallorders/views/vendorallorders_view.dart';
 
 
                         _dashboardCard('All Orders', FontAwesomeIcons.shop, () {
-                          Get.to(() => OrderView());
+                          Get.to(() => VendorOrderHistoryView());
                         }),
 
                         _dashboardCard('Pending Orders', FontAwesomeIcons.clock,() {

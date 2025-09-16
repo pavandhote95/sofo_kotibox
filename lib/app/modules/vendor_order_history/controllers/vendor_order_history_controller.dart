@@ -1,158 +1,93 @@
-// import 'package:get/get.dart';
+import 'dart:convert';
+import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:http/http.dart' as http;
 
-// class VendorOrderHistoryController extends GetxController {
-//   //TODO: Implement VendorOrderHistoryController
+class VendorOrderHistoryController extends GetxController {
+  var selectedTab = 'Processing'.obs; // 👈 Default 'Processing'
+  var allOrders = <Map<String, dynamic>>[].obs;
+  var isLoading = false.obs;
 
-//   final count = 0.obs;
-//   @override
-//   void onInit() {
-//     super.onInit();
-//   }
+  final String apiUrl =
+      "http://kotiboxglobaltech.com/sofo_app/api/vendor/received-order-list";
 
-//   @override
-//   void onReady() {
-//     super.onReady();
-//   }
+  final storage = GetStorage();
 
-//   @override
-//   void onClose() {
-//     super.onClose();
-//   }
+  @override
+  void onInit() {
+    super.onInit();
+    print("🚀 VendorOrderHistoryController INIT called");
+    fetchOrders();
+  }
 
-//   void increment() => count.value++;
-// }
+  Future<void> fetchOrders() async {
+    try {
+      print("⏳ Fetching vendor order history...");
+      isLoading.value = true;
 
+      /// 🔑 Get token from storage
+      final token = storage.read("token") ?? "";
+      print("🔑 Token found: $token");
 
+      if (token.isEmpty) {
+        print("⚠️ Token not found! Please login again.");
+        allOrders.value = [];
+        return;
+      }
 
-// import 'package:get/get.dart';
+      print("📡 API CALL -> $apiUrl");
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        },
+      );
 
-// class OrderController extends GetxController {
-//   var selectedTab = 'Delivered'.obs;
+      print("📩 API RESPONSE STATUS: ${response.statusCode}");
 
-//   final allOrders = [
-//     {
-//       'status': 'Delivered',
-//       'orderId': 'Nqers1f5e34',
-//       'date': '01/01/2022',
-//       'tracking': 'IW125994257',
-//       'quantity': 3,
-//       'amount': 165,
-//     },
-//     {
-//       'status': 'Processing',
-//       'orderId': 'ABCD123456',
-//       'date': '05/02/2022',
-//       'tracking': 'IW987654321',
-//       'quantity': 1,
-//       'amount': 99,
-//     },
-//     {
-//       'status': 'Cancelled',
-//       'orderId': 'XYZ7890LMN',
-//       'date': '12/03/2022',
-//       'tracking': 'IW112233445',
-//       'quantity': 2,
-//       'amount': 50,
-//     },
-//     {
-//       'status': 'Delivered',
-//       'orderId': 'DEL112233',
-//       'date': '15/04/2022',
-//       'tracking': 'IW446688991',
-//       'quantity': 2,
-//       'amount': 120,
-//     },
-//     {
-//       'status': 'Processing',
-//       'orderId': 'PROC789456',
-//       'date': '20/04/2022',
-//       'tracking': 'IW556677889',
-//       'quantity': 4,
-//       'amount': 200,
-//     },
-//     {
-//       'status': 'Cancelled',
-//       'orderId': 'CANC998877',
-//       'date': '25/04/2022',
-//       'tracking': 'IW334455667',
-//       'quantity': 1,
-//       'amount': 40,
-//     },
-//     {
-//       'status': 'Delivered',
-//       'orderId': 'DEL556677',
-//       'date': '30/04/2022',
-//       'tracking': 'IW778899001',
-//       'quantity': 5,
-//       'amount': 300,
-//     },
-//     {
-//       'status': 'Processing',
-//       'orderId': 'PROC112244',
-//       'date': '05/05/2022',
-//       'tracking': 'IW990011223',
-//       'quantity': 2,
-//       'amount': 89,
-//     },
-//     {
-//       'status': 'Delivered',
-//       'orderId': 'DEL334466',
-//       'date': '10/05/2022',
-//       'tracking': 'IW334488990',
-//       'quantity': 1,
-//       'amount': 70,
-//     },
-//     {
-//       'status': 'Cancelled',
-//       'orderId': 'CANC554433',
-//       'date': '15/05/2022',
-//       'tracking': 'IW220033445',
-//       'quantity': 3,
-//       'amount': 115,
-//     },
-//     {
-//       'status': 'Delivered',
-//       'orderId': 'DEL778899',
-//       'date': '20/05/2022',
-//       'tracking': 'IW119988776',
-//       'quantity': 4,
-//       'amount': 250,
-//     },
-//     {
-//       'status': 'Processing',
-//       'orderId': 'PROC667788',
-//       'date': '25/05/2022',
-//       'tracking': 'IW880099112',
-//       'quantity': 2,
-//       'amount': 140,
-//     },
-//     {
-//       'status': 'Cancelled',
-//       'orderId': 'CANC889900',
-//       'date': '30/05/2022',
-//       'tracking': 'IW445566778',
-//       'quantity': 1,
-//       'amount': 65,
-//     },
-//     {
-//       'status': 'Delivered',
-//       'orderId': 'DEL990011',
-//       'date': '01/06/2022',
-//       'tracking': 'IW221133445',
-//       'quantity': 2,
-//       'amount': 110,
-//     },
-//     {
-//       'status': 'Processing',
-//       'orderId': 'PROC332211',
-//       'date': '05/06/2022',
-//       'tracking': 'IW559988776',
-//       'quantity': 3,
-//       'amount': 170,
-//     },
-//   ].obs;
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        print("✅ API RESPONSE DECODED");
 
+        if (data['data'] != null && data['data'] is List) {
+          allOrders.value = List<Map<String, dynamic>>.from(data['data']);
+          print("📦 Orders loaded: ${allOrders.length}");
 
-//   List<Map<String, dynamic>> get filteredOrders =>
-//       allOrders.where((order) => order['status'] == selectedTab.value).toList();
-// }
+          if (allOrders.isNotEmpty) {
+            print("📝 Sample Order: ${allOrders.first}");
+            print("📝 Status field value: ${allOrders.first['status']}");
+          }
+        } else {
+          print("⚠️ API response format invalid: ${data['data']}");
+          allOrders.value = [];
+        }
+      } else if (response.statusCode == 401) {
+        print("🚫 Unauthorized: Token expired or invalid");
+        allOrders.value = [];
+        storage.erase();
+      } else {
+        print("⚠️ API Error with status code: ${response.statusCode}");
+        allOrders.value = [];
+      }
+    } catch (e) {
+      print("❌ Exception while fetching orders: $e");
+      allOrders.value = [];
+    } finally {
+      isLoading.value = false;
+      print("🏁 Fetching orders complete. Total Orders: ${allOrders.length}");
+    }
+  }
+
+  /// 🔍 Filtered orders based on selectedTab
+  List<Map<String, dynamic>> get filteredOrders {
+    final filtered = allOrders.where((order) {
+      final status = (order['status'] ?? "").toString().toLowerCase();
+      final selected = selectedTab.value.toLowerCase();
+      return status == selected;
+    }).toList();
+
+    print("🔍 Filtered Orders for tab '${selectedTab.value}': ${filtered.length}");
+    return filtered;
+  }
+}

@@ -8,7 +8,9 @@ class OrderController extends GetxController {
   var allOrders = <Map<String, dynamic>>[].obs;
 
   final String apiUrl =
-      "http://kotiboxglobaltech.com/sofo_app/api/vendor/received-order-list";
+      "http://kotiboxglobaltech.com/sofo_app/api/user/order-list";
+
+  final storage = GetStorage();
 
   @override
   void onInit() {
@@ -20,37 +22,58 @@ class OrderController extends GetxController {
     try {
       isLoading.value = true;
 
-      // ✅ Get token from storage
-      final box = GetStorage();
-      String? token = box.read("token");
+      final token = storage.read("token") ?? "";
+      if (token.isEmpty) {
+        print("⚠️ Token not found!");
+        allOrders.value = [];
+        return;
+      }
 
-      var headers = {
-        "Authorization": "Bearer $token",
-      };
-
-      var response = await http.get(Uri.parse(apiUrl), headers: headers);
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        },
+      );
 
       if (response.statusCode == 200) {
-        var jsonData = jsonDecode(response.body);
+        final data = json.decode(response.body);
+        if (data['status'] == true && data['data'] is List) {
+          allOrders.value = List<Map<String, dynamic>>.from(
+            data['data'].map((e) {
+              // ✅ Calculate total quantity
+              int totalQty = 0;
+              if (e["items"] != null) {
+                for (var item in e["items"]) {
+                  totalQty += int.tryParse(item["quantity"].toString()) ?? 0;
+                }
+              }
 
-        if (jsonData["status"] == true) {
-          List data = jsonData["data"];
-          allOrders.value = data.map((e) {
-            return {
-              "orderId": e["order_id"].toString(),
-              "tracking": e["order_number"].toString(),
-              "quantity": e["quantity"].toString(),
-              "amount": e["total_amount"].toString(),
-              "status": e["status"].toString(),
-              "date": e["created_at"].toString(),
-            };
-          }).toList();
+              return {
+                "orderId": e["order_id"],
+                "tracking": e["order_number"],
+                "amount": e["grand_total"],
+                "status": e["order_status"],
+                "date": e["created_at"],
+                "deliveryType": e["delivery_type"],
+                "selectedDate": e["selected_date"],
+                "selectedTime": e["selected_time"],
+                "items": e["items"] ?? [],
+                "quantity": totalQty, // ✅ Added
+              };
+            }),
+          );
+        } else {
+          allOrders.value = [];
         }
       } else {
-        Get.snackbar("Error", "Failed to fetch orders");
+        print("⚠️ API Error: ${response.statusCode}");
+        allOrders.value = [];
       }
     } catch (e) {
-      Get.snackbar("Error", e.toString());
+      print("❌ Error fetching orders: $e");
+      allOrders.value = [];
     } finally {
       isLoading.value = false;
     }

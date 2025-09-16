@@ -47,6 +47,7 @@ abstract class Routes {
   static const WHISHLIST = _Paths.WHISHLIST;
   static const CHOOSE_DELIVERYDATETIME = _Paths.CHOOSE_DELIVERYDATETIME;
   static const VENDOR_ORDER_HISTORY = _Paths.VENDOR_ORDER_HISTORY;
+  static const USER_ORDER_DETAILS = _Paths.USER_ORDER_DETAILS;
 }
 
 abstract class _Paths {
@@ -94,4 +95,5 @@ abstract class _Paths {
   static const WHISHLIST = '/whishlist';
   static const CHOOSE_DELIVERYDATETIME = '/choose-deliverydatetime';
   static const VENDOR_ORDER_HISTORY = '/vendor-order-history';
+  static const USER_ORDER_DETAILS = '/user-order-details';
 }

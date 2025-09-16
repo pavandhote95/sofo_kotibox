@@ -54,6 +54,8 @@ import '../modules/shop_products/bindings/shop_products_binding.dart';
 import '../modules/shop_products/views/shop_products_view.dart';
 import '../modules/splash/bindings/splash_binding.dart';
 import '../modules/splash/views/splash_view.dart';
+import '../modules/user_order_details/bindings/user_order_details_binding.dart';
+import '../modules/user_order_details/views/user_order_details_view.dart';
 import '../modules/venderlogin/bindings/venderlogin_binding.dart';
 import '../modules/venderlogin/views/venderRegister_view.dart';
 import '../modules/vendor_all_shops/bindings/vendor_all_shops_binding.dart';
@@ -61,7 +63,6 @@ import '../modules/vendor_all_shops/views/vendor_all_shops_view.dart';
 import '../modules/vendor_customers/bindings/vendor_customers_binding.dart';
 import '../modules/vendor_customers/views/vendor_customers_view.dart';
 import '../modules/vendor_order_history/bindings/vendor_order_history_binding.dart';
-import '../modules/vendor_order_history/views/vendor_order_history_view.dart' hide OrderView;
 import '../modules/vendor_registration_success/bindings/vendor_registration_success_binding.dart';
 import '../modules/vendor_registration_success/views/vendor_registration_success_view.dart';
 import '../modules/vendorwallet/bindings/vendorwallet_binding.dart';
@@ -70,6 +71,9 @@ import '../modules/whishlist/bindings/whishlist_binding.dart';
 import '../modules/whishlist/views/whishlist_view.dart';
 import '../modules/your_page_name/bindings/your_page_name_binding.dart';
 import '../modules/your_page_name/views/your_page_name_view.dart';
+
+import '../modules/vendor_order_history/views/vendor_order_history_view.dart'
+    hide OrderView;
 
 part 'app_routes.dart';
 
@@ -285,5 +289,10 @@ class AppPages {
     //   page: () => const VendorOrderHistoryView(),
     //   binding: VendorOrderHistoryBinding(),
     // ),
+    GetPage(
+      name: _Paths.USER_ORDER_DETAILS,
+      page: () => UserOrderDetailsView(),
+      binding: UserOrderDetailsBinding(),
+    ),
   ];
 }
