@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
 import 'package:sofo/app/custom_widgets/custom_button.dart';
 import 'package:sofo/app/modules/payment/controllers/payment_controller.dart';
@@ -228,18 +229,46 @@ class PaymentView extends GetView<PaymentController> {
                   const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
               child: CustomButton(
                 text: "Confirm Payment",
-                onPressed: () async {
-                  if (controller.selectedIndex == -1) {
-                    Fluttertoast.showToast(msg: "Please select a payment option");
-                    return;
-                  }
+             onPressed: () async {
+  if (controller.selectedIndex == -1) {
+    Fluttertoast.showToast(msg: "Please select a payment option");
+    return;
+  }
 
-                  // Simulate successful payment API
-                  Fluttertoast.showToast(msg: "Payment Successful ✅");
+  final selectedTitle = paymentOptions[controller.selectedIndex]['title'];
 
-                  /// ✅ Redirect to order success
-                  Get.offAll(() => OrderSuccessView());
-                },
+  if (selectedTitle == "Stripe") {
+    try {
+      // ✅ 1. PaymentIntent create karna hoga backend se
+      // Yeh sirf demo ke liye hai, normally aap backend API se secret mangte ho
+      final paymentIntentData = {
+        'client_secret': 'sk_test_xxxxxxxxxxx', // backend se aana chahiye
+      };
+
+      // ✅ 2. Init payment sheet
+      await Stripe.instance.initPaymentSheet(
+        paymentSheetParameters: SetupPaymentSheetParameters(
+          paymentIntentClientSecret: paymentIntentData['client_secret'],
+          merchantDisplayName: "Sofo Store",
+        ),
+      );
+
+      // ✅ 3. Present Payment Sheet
+      await Stripe.instance.presentPaymentSheet();
+
+      Fluttertoast.showToast(msg: "Stripe Payment Successful ✅");
+      Get.offAll(() => OrderSuccessView());
+
+    } catch (e) {
+      Fluttertoast.showToast(msg: "Payment failed: $e");
+    }
+  } else {
+    // ✅ Wallet / Apple Pay / Asian Bank ke liye direct success
+    Fluttertoast.showToast(msg: "Payment Successful ✅");
+    Get.offAll(() => OrderSuccessView());
+  }
+},
+
               ),
             ),
           ),
