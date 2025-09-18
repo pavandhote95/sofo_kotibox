@@ -2,11 +2,11 @@
   import 'package:font_awesome_flutter/font_awesome_flutter.dart';
   import 'package:get/get.dart';
 import 'package:sofo/app/modules/Vendoradditem/views/vendoradditem_view.dart';
-import 'package:sofo/app/modules/Vendorpendingorders/views/vendorpendingorders_view.dart';
+
 import 'package:sofo/app/modules/Vendorresupport/views/vendorresupport_view.dart';
 import 'package:sofo/app/modules/Vendorreview/views/vendorreview_view.dart';
 import 'package:sofo/app/modules/notification/views/setting_view.dart';
-import 'package:sofo/app/modules/order/views/order_view.dart';
+
 import 'package:sofo/app/modules/vendor_all_shops/views/vendor_all_shops_view.dart';
 import 'package:sofo/app/modules/vendor_customers/views/vendor_customers_view.dart';
 import 'package:sofo/app/modules/vendor_order_history/views/vendor_order_history_view.dart';
@@ -16,7 +16,7 @@ import 'package:sofo/app/modules/vendorwallet/views/vendorwallet_view.dart';
   import '../../../custom_widgets/app_color.dart';
   import '../../../custom_widgets/curved_top_container.dart';
   import '../../../custom_widgets/text_fonts.dart';
-import '../../Vendorallorders/views/vendorallorders_view.dart';
+
 
   class VendorDashboardView extends StatelessWidget {
     final RxString userid;
@@ -58,18 +58,9 @@ import '../../Vendorallorders/views/vendorallorders_view.dart';
                           Get.to(() => VendorOrderHistoryView());
                         }),
 
-                        _dashboardCard('Pending Orders', FontAwesomeIcons.clock,() {
-                          Get.to(() => VendorPendingOrdersView());
-
-                        }),
-                        _dashboardCard('Delivered', FontAwesomeIcons.truck,() {
-                          Get.to(() => VendorPendingOrdersView());
-
-                        }),
-                        _dashboardCard('Cancelled', FontAwesomeIcons.ban,() {
-                          Get.to(() => VendorPendingOrdersView());
-
-                        }),
+                 
+             
+                    
                         _dashboardCard('Add Item', FontAwesomeIcons.plusSquare,() {
                           Get.to(() => VendoradditemView());
 
@@ -89,14 +80,14 @@ import '../../Vendorallorders/views/vendorallorders_view.dart';
                           Get.to(() => WalletsPage());
 
                         }),
-                        _dashboardCard('Customers', FontAwesomeIcons.users,() {
-                          Get.to(() => CustomersView());
+                        // _dashboardCard('Customers', FontAwesomeIcons.users,() {
+                        //   Get.to(() => CustomersView());
 
-                        }),
-                        _dashboardCard('Reviews', FontAwesomeIcons.star,() {
-                          Get.to(() => ReviewsView());
+                        // }),
+                        // _dashboardCard('Reviews', FontAwesomeIcons.star,() {
+                        //   Get.to(() => ReviewsView());
 
-                        }),
+                        // }),
                           _dashboardCard('Support', FontAwesomeIcons.headset,() {
                             Get.to(() => SupportView());
 

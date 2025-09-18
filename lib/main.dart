@@ -8,7 +8,7 @@ import 'package:sofo/app/routes/app_pages.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
     Stripe.publishableKey = "pk_test_xxxxxxxx"; // test key
-  await Stripe.instance.applySettings();  // ✅ Always first
+  // ✅ Always first
   await GetStorage.init(); // ✅ Storage init after binding
 
   SystemChrome.setSystemUIOverlayStyle(
